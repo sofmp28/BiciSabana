@@ -1,0 +1,11 @@
+=== BICISABANA | DEMOSTRACIÓN SPRINT 1 ===
+REGISTRO: B01 | Color: Roja | Estado: Disponible | Puesto: (1, 1)
+REGISTRO: B02 | Color: Azul | Estado: Disponible | Puesto: (1, 2)
+REGISTRO: B03 | Color: Verde | Estado: Disponible | Puesto: (1, 3)
+ANTES: B01 | Color: Roja | Estado: Disponible | Puesto: (1, 1)
+PRÉSTAMO: B01 al estudiante 123456
+HORA DE SALIDA: 2026-11-06 07:44:58
+DURANTE: B01 | Color: Roja | Estado: Prestada | Puesto: (1, 1) | Estudiante: 123456
+INTENTO DUPLICADO RECHAZADO: La bicicleta ya está prestada o no está disponible.
+DEVOLUCIÓN: B01 | Estado: Disponible
+DESPUÉS: B01 | Color: Roja | Estado: Disponible | Puesto: (1, 1)

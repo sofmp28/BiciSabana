@@ -1,0 +1,32 @@
+test_01_registro_estado_inicial (test_bicisabana.PruebasSprint1.test_01_registro_estado_inicial) ... ok
+test_02_mostrar_informacion (test_bicisabana.PruebasSprint1.test_02_mostrar_informacion) ... ok
+test_03_registrar_prestamo (test_bicisabana.PruebasSprint1.test_03_registrar_prestamo) ... ok
+test_04_bloquear_segundo_prestamo_misma_bicicleta (test_bicisabana.PruebasSprint1.test_04_bloquear_segundo_prestamo_misma_bicicleta) ... ok
+test_05_devolucion_correcta (test_bicisabana.PruebasSprint1.test_05_devolucion_correcta) ... ok
+test_06_estudiante_asociado (test_bicisabana.PruebasSprint1.test_06_estudiante_asociado) ... ok
+test_07_hora_inicio (test_bicisabana.PruebasSprint1.test_07_hora_inicio) ... ok
+test_08_codigo_estudiantil_no_numerico (test_bicisabana.PruebasSprint1.test_08_codigo_estudiantil_no_numerico) ... ok
+test_09_codigo_estudiantil_longitud_invalida (test_bicisabana.PruebasSprint1.test_09_codigo_estudiantil_longitud_invalida) ... ok
+test_10_prestamo_bicicleta_inexistente (test_bicisabana.PruebasSprint1.test_10_prestamo_bicicleta_inexistente) ... ok
+test_11_no_dos_bicicletas_mismo_estudiante (test_bicisabana.PruebasSprint1.test_11_no_dos_bicicletas_mismo_estudiante) ... ok
+test_12_no_devolver_bicicleta_disponible (test_bicisabana.PruebasSprint1.test_12_no_devolver_bicicleta_disponible) ... ok
+test_13_no_duplicar_codigo_de_bicicleta (test_bicisabana.PruebasSprint1.test_13_no_duplicar_codigo_de_bicicleta) ... ok
+test_14_no_ocupar_dos_veces_un_puesto (test_bicisabana.PruebasSprint1.test_14_no_ocupar_dos_veces_un_puesto) ... ok
+test_15_represtar_tras_devolucion (test_bicisabana.PruebasSprint1.test_15_represtar_tras_devolucion) ... ok
+test_16_estudiante_tras_devolucion_puede_pedir_otra (test_bicisabana.PruebasSprint1.test_16_estudiante_tras_devolucion_puede_pedir_otra) ... ok
+test_17_bicicleta_inexistente_al_devolver (test_bicisabana.PruebasSprint1.test_17_bicicleta_inexistente_al_devolver) ... ok
+test_18_registro_bicicleta_fila_fuera_rango (test_bicisabana.PruebasSprint1.test_18_registro_bicicleta_fila_fuera_rango) ... ok
+test_19_consulta_completa_con_estudiante_actual (test_bicisabana.PruebasSprint1.test_19_consulta_completa_con_estudiante_actual) ... ok
+test_20_consulta_tras_devolucion_sin_estudiante_anterior (test_bicisabana.PruebasSprint1.test_20_consulta_tras_devolucion_sin_estudiante_anterior) ... ok
+test_21_consulta_represtamo_muestra_solo_estudiante_actual (test_bicisabana.PruebasSprint1.test_21_consulta_represtamo_muestra_solo_estudiante_actual) ... ok
+test_22_consulta_inexistente_no_altera_inventario (test_bicisabana.PruebasSprint1.test_22_consulta_inexistente_no_altera_inventario) ... ok
+test_23_registros_invalidos_no_agregan_bicicletas (test_bicisabana.PruebasSprint1.test_23_registros_invalidos_no_agregan_bicicletas) ... ok
+test_24_codigos_invalidos_no_crean_prestamos (test_bicisabana.PruebasSprint1.test_24_codigos_invalidos_no_crean_prestamos) ... ok
+test_25_codigo_estudiantil_con_ceros_iniciales (test_bicisabana.PruebasSprint1.test_25_codigo_estudiantil_con_ceros_iniciales) ... ok
+test_26_doble_devolucion_conserva_prestamo_cerrado (test_bicisabana.PruebasSprint1.test_26_doble_devolucion_conserva_prestamo_cerrado) ... ok
+test_27_demostracion_muestra_registros_y_ciclo_completo (test_bicisabana.PruebasSprint1.test_27_demostracion_muestra_registros_y_ciclo_completo) ... ok
+
+----------------------------------------------------------------------
+Ran 27 tests in 0.002s
+
+OK
