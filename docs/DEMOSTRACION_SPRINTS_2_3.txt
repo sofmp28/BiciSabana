@@ -1,0 +1,102 @@
+Entrada simulada:
+15
+3
+B01
+123456
+3
+B01
+654321
+4
+B01
+6
+7
+0
+
+SALIDA:
+
+=== BICISABANA ===
+1. Registrar bicicleta      2. Consultar bicicleta
+3. Prestar bicicleta        4. Devolver bicicleta
+5. Listar disponibles       6. Contar bicicletas
+7. Mostrar mapa 3 x 10      8. Préstamos activos
+9. Historial de bicicleta  10. Marcar mantenimiento
+11. Reactivar bicicleta    12. Mover bicicleta
+13. Intentos rechazados    14. Retirar bicicleta
+15. Cargar 30 de ejemplo    0. Salir
+
+Elige una opción: Se cargaron las 30 bicicletas de demostración.
+
+=== BICISABANA ===
+1. Registrar bicicleta      2. Consultar bicicleta
+3. Prestar bicicleta        4. Devolver bicicleta
+5. Listar disponibles       6. Contar bicicletas
+7. Mostrar mapa 3 x 10      8. Préstamos activos
+9. Historial de bicicleta  10. Marcar mantenimiento
+11. Reactivar bicicleta    12. Mover bicicleta
+13. Intentos rechazados    14. Retirar bicicleta
+15. Cargar 30 de ejemplo    0. Salir
+
+Elige una opción: Bicicleta: Código estudiantil (6 dígitos): Préstamo correcto: B01 | Estudiante: 123456 | Salida: 2026-11-17 01:14:54 | Activo
+
+=== BICISABANA ===
+1. Registrar bicicleta      2. Consultar bicicleta
+3. Prestar bicicleta        4. Devolver bicicleta
+5. Listar disponibles       6. Contar bicicletas
+7. Mostrar mapa 3 x 10      8. Préstamos activos
+9. Historial de bicicleta  10. Marcar mantenimiento
+11. Reactivar bicicleta    12. Mover bicicleta
+13. Intentos rechazados    14. Retirar bicicleta
+15. Cargar 30 de ejemplo    0. Salir
+
+Elige una opción: Bicicleta: Código estudiantil (6 dígitos): No se pudo completar la operación: La bicicleta ya está prestada o no está disponible.
+
+=== BICISABANA ===
+1. Registrar bicicleta      2. Consultar bicicleta
+3. Prestar bicicleta        4. Devolver bicicleta
+5. Listar disponibles       6. Contar bicicletas
+7. Mostrar mapa 3 x 10      8. Préstamos activos
+9. Historial de bicicleta  10. Marcar mantenimiento
+11. Reactivar bicicleta    12. Mover bicicleta
+13. Intentos rechazados    14. Retirar bicicleta
+15. Cargar 30 de ejemplo    0. Salir
+
+Elige una opción: Bicicleta: Devolución correcta: B01 | Estudiante: 123456 | Salida: 2026-11-17 01:14:54 | Regreso: 2026-11-17 01:14:54 | Duración: 0:00:00.000152
+
+=== BICISABANA ===
+1. Registrar bicicleta      2. Consultar bicicleta
+3. Prestar bicicleta        4. Devolver bicicleta
+5. Listar disponibles       6. Contar bicicletas
+7. Mostrar mapa 3 x 10      8. Préstamos activos
+9. Historial de bicicleta  10. Marcar mantenimiento
+11. Reactivar bicicleta    12. Mover bicicleta
+13. Intentos rechazados    14. Retirar bicicleta
+15. Cargar 30 de ejemplo    0. Salir
+
+Elige una opción: {'total': 30, 'disponibles': 30, 'prestadas': 0, 'mantenimiento': 0}
+
+=== BICISABANA ===
+1. Registrar bicicleta      2. Consultar bicicleta
+3. Prestar bicicleta        4. Devolver bicicleta
+5. Listar disponibles       6. Contar bicicletas
+7. Mostrar mapa 3 x 10      8. Préstamos activos
+9. Historial de bicicleta  10. Marcar mantenimiento
+11. Reactivar bicicleta    12. Mover bicicleta
+13. Intentos rechazados    14. Retirar bicicleta
+15. Cargar 30 de ejemplo    0. Salir
+
+Elige una opción: ESTACIÓN BICISABANA (D=Disponible, P=Prestada, M=Mantenimiento)
+Fila 1: [ B01:D] [ B02:D] [ B03:D] [ B04:D] [ B05:D] [ B06:D] [ B07:D] [ B08:D] [ B09:D] [ B10:D]
+Fila 2: [ B11:D] [ B12:D] [ B13:D] [ B14:D] [ B15:D] [ B16:D] [ B17:D] [ B18:D] [ B19:D] [ B20:D]
+Fila 3: [ B21:D] [ B22:D] [ B23:D] [ B24:D] [ B25:D] [ B26:D] [ B27:D] [ B28:D] [ B29:D] [ B30:D]
+
+=== BICISABANA ===
+1. Registrar bicicleta      2. Consultar bicicleta
+3. Prestar bicicleta        4. Devolver bicicleta
+5. Listar disponibles       6. Contar bicicletas
+7. Mostrar mapa 3 x 10      8. Préstamos activos
+9. Historial de bicicleta  10. Marcar mantenimiento
+11. Reactivar bicicleta    12. Mover bicicleta
+13. Intentos rechazados    14. Retirar bicicleta
+15. Cargar 30 de ejemplo    0. Salir
+
+Elige una opción: Gracias por utilizar BiciSabana.

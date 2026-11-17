@@ -1,0 +1,25 @@
+BICISABANA | SIMULACIÓN DEVSECOPS — MONITOREAR
+01. ACEPTADA  | Prestar B01 al código 000001
+02. ACEPTADA  | Prestar B02 al código 000002
+03. ACEPTADA  | Prestar B03 al código 000003
+04. ACEPTADA  | Prestar B04 al código 000004
+05. ACEPTADA  | Prestar B05 al código 000005
+06. ACEPTADA  | Prestar B06 al código 000006
+07. ACEPTADA  | Prestar B07 al código 000007
+08. ACEPTADA  | Prestar B08 al código 000008
+09. ACEPTADA  | Prestar B09 al código 000009
+10. ACEPTADA  | Prestar B10 al código 000010
+11. ACEPTADA  | Devolver B01
+12. ACEPTADA  | Devolver B02
+13. ACEPTADA  | Devolver B03
+14. ACEPTADA  | Devolver B04
+15. ACEPTADA  | Devolver B05
+16. ACEPTADA  | Devolver B06
+17. RECHAZADA | Intento repetido B07 | La bicicleta ya está prestada o no está disponible.
+18. RECHAZADA | Segundo préstamo del estudiante 000010 | Este estudiante ya tiene una bicicleta prestada.
+19. RECHAZADA | Bicicleta inexistente B31 | No existe una bicicleta con ese código.
+20. RECHAZADA | Código de estudiante inválido | El código estudiantil debe contener exactamente 6 números.
+TOTAL=20 | ACEPTADAS=16 | RECHAZADAS=4
+Estados finales: {'total': 30, 'disponibles': 26, 'prestadas': 4, 'mantenimiento': 0}
+Conclusión 1: 16 de 20 operaciones simuladas se aceptaron (80%).
+Conclusión 2: 4 intentos inválidos (20%) fueron rechazados; el inventario terminó coherente: 4 prestadas y 26 disponibles.

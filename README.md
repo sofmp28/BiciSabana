@@ -81,3 +81,8 @@ Tablero: https://app.notion.com/p/4093620bdfce81fdbe14e0401d790718
 Sprint 1: https://app.notion.com/p/4093620bdfce81be9a66e41107cc3fe8
 
 No marques una tarea como «Hecho» hasta que el equipo revise y acepte el código y sus evidencias.
+
+
+## Python completo — Sprints 2 y 3
+
+El programa principal incluye ahora consultas, validaciones, mapa 3×10, mantenimiento, historial y menú. Ejecuta con python bicisabana.py; prueba con python -m unittest discover -v; simula con python simulacion_20_operaciones.py. Ver docs/IMPLEMENTACION_SPRINTS_2_3.md para trazabilidad y limitaciones. La web sigue independiente de Python.
