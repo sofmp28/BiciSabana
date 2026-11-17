@@ -1,0 +1,10 @@
+{
+  "name": "bicisabana-web",
+  "version": "1.0.0",
+  "private": true,
+  "description": "BiciSabana · interfaz web del sistema de préstamo de bicicletas de la Universidad de La Sabana",
+  "scripts": {
+    "dev": "npx --yes serve public -l 3000",
+    "dev:vercel": "vercel dev"
+  }
+}
