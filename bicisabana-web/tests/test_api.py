@@ -134,6 +134,27 @@ class DB:
         return RPC(self, nombre, datos)
 
 
+class PruebasRutasVercel(unittest.TestCase):
+    def test_originales(self):
+        h = app.handler.__new__(app.handler)
+        for path in ("/api/estado", "/api/prestamos", "/api/devoluciones"):
+            h.path = path
+            self.assertEqual(h._ruta(), path)
+
+    def test_reescritas(self):
+        h = app.handler.__new__(app.handler)
+        for name in ("estado", "prestamos", "devoluciones", "bicicletas",
+                     "mantenimiento", "reactivar", "mover", "retirar", "cargar-ejemplo"):
+            h.path = "/api/index.py?operacion=" + name
+            self.assertEqual(h._ruta(), "/api/" + name)
+
+    def test_invalidas(self):
+        h = app.handler.__new__(app.handler)
+        for path in ("/api/index.py?operacion=%2E%2E%2Fsecretos", "/api/index.py"):
+            h.path = path
+            self.assertEqual(h._ruta(), "/api/index.py")
+
+
 class PruebasIntegracion(unittest.TestCase):
     def setUp(self):
         self.db = DB()

@@ -17,7 +17,7 @@ import sys
 from datetime import datetime, timezone
 from http.server import BaseHTTPRequestHandler
 from pathlib import Path
-from urllib.parse import urlsplit
+from urllib.parse import urlsplit, parse_qs
 
 sys.path.insert(0, str(Path(__file__).resolve().parent.parent / "backend"))
 from bicisabana import Bicicleta, Estudiante, Prestamo, SistemaBiciSabana  # noqa: E402
@@ -250,8 +250,20 @@ class handler(BaseHTTPRequestHandler):  # Vercel reconoce este nombre exacto.
             return False
         return True
 
+    def _ruta(self):
+        """Reconoce las rutas originales y las reescritas por Vercel."""
+        parsed = urlsplit(self.path)
+        ruta = parsed.path
+        if ruta == "/api/estado" or ruta in RUTAS:
+            return ruta
+        if ruta.rstrip("/") in ("/api", "/api/index", "/api/index.py"):
+            operaciones = parse_qs(parsed.query).get("operacion", [])
+            if len(operaciones) == 1 and re.fullmatch(r"[a-z][a-z0-9-]*", operaciones[0]):
+                return "/api/" + operaciones[0]
+        return ruta
+
     def do_GET(self):
-        ruta = urlsplit(self.path).path
+        ruta = self._ruta()
         if ruta != "/api/estado":
             return self._enviar(404, {"ok": False, "error": "Ruta no encontrada."})
         if not self._autorizar():
@@ -263,7 +275,7 @@ class handler(BaseHTTPRequestHandler):  # Vercel reconoce este nombre exacto.
             self._enviar(503, {"ok": False, "error": "No se pudo consultar la base de datos."})
 
     def do_POST(self):
-        ruta = urlsplit(self.path).path
+        ruta = self._ruta()
         funcion = RUTAS.get(ruta)
         if funcion is None:
             return self._enviar(404, {"ok": False, "error": "Ruta no encontrada."})
