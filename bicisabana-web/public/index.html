@@ -1,0 +1,871 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>BiciSabana · Universidad de La Sabana</title>
+<meta name="description" content="Sistema universitario de préstamo y gestión de bicicletas.">
+<meta name="theme-color" content="#0E3B2A">
+<script src="./support.js"></script>
+</head>
+<body>
+<x-dc>
+<helmet>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Instrument+Serif:ital@0;1&display=swap">
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Material+Symbols+Rounded:opsz,wght,FILL,GRAD@24,400,0,0&display=block">
+<script src="./image-slot.js"></script>
+<style>
+body{margin:0;background:#F2F5EF;font-family:Manrope,system-ui,sans-serif;color:#14281D;-webkit-font-smoothing:antialiased}
+*{box-sizing:border-box}
+a{color:#1E7B4E;text-decoration:none}a:hover{color:#155C3A;text-decoration:underline}
+button,input,select{font:inherit;color:inherit}
+input:focus,select:focus{outline:none;border-color:#1E7B4E !important;box-shadow:0 0 0 4px rgba(30,123,78,.14)}
+@keyframes bsIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:none}}
+</style>
+</helmet>
+<div style="display:flex;min-height:100vh;background:#F2F5EF">
+
+<aside style="position:{{ sidePos }};left:{{ sideLeft }};top:0;z-index:40;width:256px;flex:0 0 256px;height:100vh;background:#0E3B2A;color:#B9CDBF;display:flex;flex-direction:column;padding:22px 16px 18px;transition:left .25s ease;overflow-y:auto">
+  <div style="display:flex;flex-direction:column;gap:14px;padding:0 6px 22px;border-bottom:1px solid rgba(255,255,255,.08)">
+    <div style="background:#FFFFFF;border-radius:12px;height:52px;padding:6px 10px;display:flex;align-items:center">
+      <image-slot id="logo-sidebar" shape="rounded" radius="6" fit="contain" placeholder="Logo U. Sabana" style="width:100%;height:40px"></image-slot>
+    </div>
+    <div style="display:flex;align-items:center;gap:10px">
+      <div style="width:34px;height:34px;border-radius:10px;background:#C5E68A;color:#0E3B2A;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">pedal_bike</span></div>
+      <div style="display:flex;flex-direction:column;gap:2px">
+        <div style="font-family:'Instrument Serif',serif;font-size:26px;line-height:1;color:#FFFFFF">Bici<span style="font-style:italic;color:#C5E68A">Sabana</span></div>
+        <div style="font-size:9.5px;font-weight:700;letter-spacing:.18em;text-transform:uppercase;color:#7FA08B">Movilidad del campus</div>
+      </div>
+    </div>
+  </div>
+  <div style="font-size:10px;font-weight:800;letter-spacing:.16em;color:#6E9079;margin:22px 12px 10px">OPERACIÓN</div>
+  <nav style="display:flex;flex-direction:column;gap:3px">
+    <sc-for list="{{ navOps }}" as="n" hint-placeholder-count="6">
+      <button onClick="{{ n.go }}" style="display:flex;align-items:center;gap:12px;width:100%;border:0;text-align:left;cursor:pointer;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:600;background:{{ n.bg }};color:{{ n.fg }}">
+        <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">{{ n.icon }}</span>
+        <span style="flex:1">{{ n.label }}</span>
+        <sc-if value="{{ n.badge }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(197,230,138,.16);color:#C5E68A">{{ n.badge }}</span></sc-if>
+      </button>
+    </sc-for>
+  </nav>
+  <div style="font-size:10px;font-weight:800;letter-spacing:.16em;color:#6E9079;margin:22px 12px 10px">CONTROL</div>
+  <nav style="display:flex;flex-direction:column;gap:3px">
+    <sc-for list="{{ navCtl }}" as="n" hint-placeholder-count="4">
+      <button onClick="{{ n.go }}" style="display:flex;align-items:center;gap:12px;width:100%;border:0;text-align:left;cursor:pointer;padding:10px 12px;border-radius:10px;font-size:13.5px;font-weight:600;background:{{ n.bg }};color:{{ n.fg }}">
+        <span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">{{ n.icon }}</span>
+        <span style="flex:1">{{ n.label }}</span>
+        <sc-if value="{{ n.badge }}" hint-placeholder-val="{{ false }}"><span style="font-size:11px;font-weight:700;padding:2px 8px;border-radius:99px;background:rgba(197,230,138,.16);color:#C5E68A">{{ n.badge }}</span></sc-if>
+      </button>
+    </sc-for>
+  </nav>
+  <div style="margin-top:auto;padding:14px;border-radius:14px;background:rgba(255,255,255,.05);display:flex;flex-direction:column;gap:6px">
+    <div style="display:flex;align-items:center;gap:8px;font-size:12px;font-weight:700;color:#E8F2EA"><span style="width:8px;height:8px;border-radius:50%;background:#8FD16A;box-shadow:0 0 0 4px rgba(143,209,106,.18)"></span>Estación en línea</div>
+    <div style="font-size:11.5px;line-height:1.45;color:#8EAA97">Campus Puente del Común · Chía</div>
+  </div>
+</aside>
+<sc-if value="{{ showScrim }}" hint-placeholder-val="{{ false }}"><div onClick="{{ closeMenu }}" style="position:fixed;inset:0;background:rgba(14,59,42,.4);z-index:35"></div></sc-if>
+
+<div style="flex:1;min-width:0;display:flex;flex-direction:column">
+  <header style="position:sticky;top:0;z-index:20;display:flex;align-items:center;gap:14px;padding:14px 28px;background:rgba(242,245,239,.86);backdrop-filter:blur(10px);border-bottom:1px solid #E3E9E1">
+    <sc-if value="{{ narrow }}" hint-placeholder-val="{{ false }}"><button onClick="{{ openMenu }}" style="border:1px solid #DCE4DA;background:#FFFFFF;border-radius:10px;width:40px;height:40px;cursor:pointer;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">menu</span></button></sc-if>
+    <div style="display:flex;flex-direction:column;gap:1px;min-width:0">
+      <div style="font-size:11.5px;color:#6B7D71;font-weight:600">BiciSabana / Estación Central</div>
+      <div style="font-size:16px;font-weight:800;letter-spacing:-.01em">{{ screenTitle }}</div>
+    </div>
+    <div style="margin-left:auto;display:flex;align-items:center;gap:12px">
+      <div style="font-size:12.5px;color:#5E6F64;font-weight:600;white-space:nowrap">{{ todayLabel }}</div>
+      <button onClick="{{ goLoan }}" style="display:flex;align-items:center;gap:6px;border:0;cursor:pointer;background:#1E7B4E;color:#FFFFFF;font-weight:700;font-size:13px;padding:10px 14px;border-radius:11px;box-shadow:0 6px 16px -8px rgba(30,123,78,.7)"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">add</span>Préstamo</button>
+      <button onClick="{{ connectAction }}" title="Conectar o desconectar la estación real" style="border:1px solid #BDD8C2;background:#FFFFFF;border-radius:10px;padding:10px 12px;color:#155C3A;font-size:11px;font-weight:800;cursor:pointer;white-space:nowrap">{{ connectionLabel }}</button>
+      <div style="width:38px;height:38px;border-radius:50%;background:#DCEBD8;color:#155C3A;font-weight:800;font-size:13px;display:flex;align-items:center;justify-content:center">MO</div>
+    </div>
+  </header>
+
+  <main style="padding:26px 28px 48px;display:flex;flex-direction:column;gap:22px;max-width:1440px;width:100%">
+  <sc-if value="{{ demoMode }}" hint-placeholder-val="{{ true }}">
+    <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 16px;border-radius:12px;border:1px solid #D6C599;background:#FFF7E4;color:#705222;font-size:12px;font-weight:650">
+      <span>Modo demostración: los datos son ficticios y NO están guardándose en Python ni Supabase.</span>
+      <button onClick="{{ connectAction }}" style="border:0;background:#0E3B2A;color:white;cursor:pointer;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:800">Conectar estación real</button>
+    </div>
+  </sc-if>
+  <sc-if value="{{ liveMode }}" hint-placeholder-val="{{ false }}">
+    <div style="padding:10px 14px;border-radius:12px;border:1px solid #B8DDC4;background:#E4F3E8;color:#1D6B40;font-size:12px;font-weight:700">Estación conectada: las operaciones utilizan Python y se guardan en Supabase.</div>
+  </sc-if>
+
+  <!-- 1 DASHBOARD -->
+  <sc-if value="{{ is.dashboard }}" hint-placeholder-val="{{ true }}">
+  <div data-screen-label="01 Dashboard" style="display:flex;flex-direction:column;gap:22px;animation:bsIn .35s ease">
+    <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(340px,1fr));gap:0;border-radius:24px;overflow:hidden;background:#0E3B2A;box-shadow:0 20px 40px -24px rgba(14,59,42,.6)">
+      <div style="padding:34px 36px;display:flex;flex-direction:column;gap:18px;color:#FFFFFF;position:relative">
+        <div style="display:flex;align-items:center;gap:12px">
+          <div style="background:#FFFFFF;border-radius:10px;padding:5px 10px;width:170px;height:46px"><image-slot id="logo-hero" shape="rounded" radius="6" fit="contain" placeholder="Logo U. Sabana" style="width:100%;height:36px"></image-slot></div>
+          <span style="font-size:10.5px;font-weight:800;letter-spacing:.16em;color:#C5E68A">BIENESTAR UNIVERSITARIO</span>
+        </div>
+        <h1 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:52px;line-height:1;letter-spacing:-.015em;margin:6px 0 0;text-wrap:balance">Bienvenido a Bici<span style="font-style:italic;color:#C5E68A">Sabana</span>, el campus en dos ruedas.</h1>
+        <p style="margin:0;font-size:15px;line-height:1.6;color:#B9CDBF;max-width:460px">Gestiona préstamos, devoluciones y mantenimiento de las 30 bicicletas de la estación desde un solo panel.</p>
+        <div style="display:flex;flex-wrap:wrap;gap:10px;margin-top:4px">
+          <button onClick="{{ goLoan }}" style="display:flex;align-items:center;gap:8px;border:0;cursor:pointer;background:#C5E68A;color:#0E3B2A;font-weight:800;font-size:14px;padding:13px 18px;border-radius:12px">Registrar préstamo<span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">arrow_forward</span></button>
+          <button onClick="{{ goMap }}" style="display:flex;align-items:center;gap:8px;cursor:pointer;background:transparent;color:#FFFFFF;border:1px solid rgba(255,255,255,.25);font-weight:700;font-size:14px;padding:13px 18px;border-radius:12px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">grid_view</span>Ver estación</button>
+        </div>
+        <div style="display:flex;gap:26px;margin-top:10px;padding-top:18px;border-top:1px solid rgba(255,255,255,.1);flex-wrap:wrap">
+          <div><div style="font-size:26px;font-weight:800">{{ occPct }}%</div><div style="font-size:12px;color:#8EAA97">bicicletas en uso</div></div>
+          <div><div style="font-size:26px;font-weight:800">{{ todayLoans }}</div><div style="font-size:12px;color:#8EAA97">salidas en 12 h</div></div>
+          <div><div style="font-size:26px;font-weight:800">{{ avgDur }}</div><div style="font-size:12px;color:#8EAA97">duración promedio</div></div>
+        </div>
+      </div>
+      <div style="position:relative;min-height:340px">
+        <image-slot id="hero-campus" shape="rect" placeholder="Foto: estudiantes en bicicleta por el campus" style="position:absolute;inset:0;width:100%;height:100%"></image-slot>
+      </div>
+    </section>
+
+    <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px">
+      <sc-for list="{{ metrics }}" as="m" hint-placeholder-count="6">
+        <button onClick="{{ m.go }}" style="text-align:left;cursor:pointer;background:#FFFFFF;border:1px solid #E3E9E1;border-radius:18px;padding:18px;display:flex;flex-direction:column;gap:14px;box-shadow:0 1px 2px rgba(20,40,29,.04),0 10px 24px -16px rgba(20,40,29,.18)" style-hover="border-color:#BFD6C2;transform:translateY(-1px)">
+          <div style="display:flex;align-items:center;justify-content:space-between;width:100%">
+            <span style="font-size:12.5px;font-weight:700;color:#5E6F64">{{ m.label }}</span>
+            <span style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:{{ m.bg }};color:{{ m.fg }}"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">{{ m.icon }}</span></span>
+          </div>
+          <div style="font-size:38px;font-weight:800;letter-spacing:-.03em;line-height:1">{{ m.value }}</div>
+          <div style="font-size:12px;color:#7A8B80;font-weight:600">{{ m.note }}</div>
+        </button>
+      </sc-for>
+    </section>
+
+    <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px">
+      <div style="grid-column:span 2;min-width:0;background:#FFFFFF;border:1px solid #E3E9E1;border-radius:20px;padding:22px 24px;display:flex;flex-direction:column;gap:18px">
+        <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:12px;flex-wrap:wrap">
+          <div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:#1E7B4E">USO DE LA ESTACIÓN</div><div style="font-family:'Instrument Serif',serif;font-size:28px;margin-top:4px">Salidas por hora · últimas 12 h</div></div>
+          <div style="font-size:12px;color:#7A8B80;font-weight:600">{{ todayLoans }} préstamos iniciados</div>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px;align-items:end;height:180px;padding-top:10px;border-bottom:1px solid #E3E9E1">
+          <sc-for list="{{ bars }}" as="b" hint-placeholder-count="12">
+            <div style="display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:6px;height:100%">
+              <span style="font-size:11px;font-weight:700;color:#5E6F64">{{ b.v }}</span>
+              <div style="width:100%;max-width:34px;border-radius:8px 8px 3px 3px;height:{{ b.h }};background:{{ b.c }}"></div>
+            </div>
+          </sc-for>
+        </div>
+        <div style="display:grid;grid-template-columns:repeat(12,minmax(0,1fr));gap:8px;margin-top:-10px">
+          <sc-for list="{{ bars }}" as="b" hint-placeholder-count="12"><div style="text-align:center;font-size:10.5px;color:#7A8B80;font-weight:600">{{ b.label }}</div></sc-for>
+        </div>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:20px;padding:22px 24px;display:flex;flex-direction:column;gap:18px">
+        <div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:#1E7B4E">DISTRIBUCIÓN</div><div style="font-family:'Instrument Serif',serif;font-size:28px;margin-top:4px">Estado de los 30 puestos</div></div>
+        <div style="display:flex;align-items:center;gap:22px;flex-wrap:wrap">
+          <div style="width:150px;height:150px;border-radius:50%;background:{{ donutBg }};display:flex;align-items:center;justify-content:center;flex:none">
+            <div style="width:104px;height:104px;border-radius:50%;background:#FFFFFF;display:flex;flex-direction:column;align-items:center;justify-content:center"><div style="font-size:28px;font-weight:800;line-height:1">{{ c.total }}</div><div style="font-size:11px;color:#7A8B80;font-weight:600">registradas</div></div>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:10px;flex:1;min-width:120px">
+            <sc-for list="{{ legend }}" as="l" hint-placeholder-count="4">
+              <div style="display:flex;align-items:center;gap:9px;font-size:13px;font-weight:600"><span style="width:10px;height:10px;border-radius:3px;background:{{ l.color }};border:{{ l.border }}"></span><span style="flex:1;color:#3D5045">{{ l.label }}</span><span style="font-weight:800">{{ l.v }}</span></div>
+            </sc-for>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <section style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px">
+      <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:20px;padding:22px 24px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-family:'Instrument Serif',serif;font-size:26px">Actividad reciente</div><button onClick="{{ goHist }}" style="border:0;background:none;cursor:pointer;color:#1E7B4E;font-weight:700;font-size:13px">Ver historial →</button></div>
+        <sc-for list="{{ recent }}" as="e" hint-placeholder-count="5">
+          <div style="display:flex;align-items:center;gap:12px;padding:10px 0;border-top:1px solid #EEF2EC">
+            <span style="width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;background:{{ e.bg }};color:{{ e.fg }}"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">{{ e.icon }}</span></span>
+            <div style="flex:1;min-width:0"><div style="font-size:13.5px;font-weight:700">{{ e.title }}</div><div style="font-size:12px;color:#7A8B80">{{ e.sub }}</div></div>
+            <span style="font-size:12px;color:#5E6F64;font-weight:600">{{ e.time }}</span>
+          </div>
+        </sc-for>
+      </div>
+      <div style="background:#E4F0DF;border:1px solid #D2E4CB;border-radius:20px;padding:22px 24px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-family:'Instrument Serif',serif;font-size:26px">Vista rápida de la estación</div><button onClick="{{ goMap }}" style="border:0;background:none;cursor:pointer;color:#155C3A;font-weight:700;font-size:13px">Abrir mapa →</button></div>
+        <div style="display:flex;flex-direction:column;gap:7px">
+          <sc-for list="{{ mapRows }}" as="row" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:repeat(10,minmax(0,1fr));gap:6px">
+              <sc-for list="{{ row.cells }}" as="cl" hint-placeholder-count="10"><div title="{{ cl.title }}" style="aspect-ratio:1;border-radius:7px;background:{{ cl.mini }};border:{{ cl.miniBorder }}"></div></sc-for>
+            </div>
+          </sc-for>
+        </div>
+        <div style="font-size:12.5px;color:#3D5045;font-weight:600">{{ c.disponibles }} listas para salir · {{ c.vacios }} puesto(s) libre(s)</div>
+      </div>
+    </section>
+  </div>
+  </sc-if>
+
+  <!-- 2 MAPA -->
+  <sc-if value="{{ is.mapa }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="02 Mapa de estación" style="display:flex;flex-direction:column;gap:20px;animation:bsIn .35s ease">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:#1E7B4E">VISTA EN TIEMPO REAL</div><h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:40px;margin:4px 0 0;line-height:1.05">Estación Central <span style="color:#8FA597;font-style:italic">3 × 10</span></h2><p style="margin:6px 0 0;color:#5E6F64;font-size:14px">Selecciona un puesto para ver su detalle o iniciar una operación.</p></div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <sc-for list="{{ legend }}" as="l" hint-placeholder-count="4"><span style="display:flex;align-items:center;gap:7px;background:#FFFFFF;border:1px solid #E3E9E1;padding:7px 12px;border-radius:99px;font-size:12.5px;font-weight:700"><span style="width:10px;height:10px;border-radius:3px;background:{{ l.color }};border:{{ l.border }}"></span>{{ l.label }} · {{ l.v }}</span></sc-for>
+      </div>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;align-items:start">
+      <div style="grid-column:span 2;min-width:0;background:#FFFFFF;border:1px solid #E3E9E1;border-radius:22px;padding:22px;overflow-x:auto">
+        <div style="min-width:660px;display:flex;flex-direction:column;gap:12px">
+          <sc-if value="{{ moveFrom }}" hint-placeholder-val="{{ false }}"><div style="display:flex;align-items:center;gap:10px;padding:10px 14px;border-radius:12px;background:#E4F0DF;color:#155C3A;font-size:13px;font-weight:700"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">open_with</span><span style="flex:1">Moviendo {{ moveFrom }}: haz clic en un puesto libre.</span><button onClick="{{ cancelMove }}" style="cursor:pointer;border:0;background:#FFFFFF;color:#155C3A;font-weight:800;font-size:12px;padding:6px 10px;border-radius:8px">Cancelar</button></div></sc-if>
+          <div style="display:grid;grid-template-columns:64px repeat(10,minmax(0,1fr));gap:9px">
+            <span></span>
+            <sc-for list="{{ spotHeads }}" as="h" hint-placeholder-count="10"><span style="text-align:center;font-size:10.5px;font-weight:800;color:#8FA597;letter-spacing:.06em">{{ h }}</span></sc-for>
+          </div>
+          <sc-for list="{{ mapRows }}" as="row" hint-placeholder-count="3">
+            <div style="display:grid;grid-template-columns:64px repeat(10,minmax(0,1fr));gap:9px;align-items:stretch">
+              <div style="display:flex;align-items:center;font-size:11px;font-weight:800;letter-spacing:.1em;color:#5E6F64">{{ row.label }}</div>
+              <sc-for list="{{ row.cells }}" as="cl" hint-placeholder-count="10">
+                <button onClick="{{ cl.pick }}" title="{{ cl.title }}" style="cursor:pointer;aspect-ratio:.82;border-radius:14px;padding:8px 4px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:4px;background:{{ cl.bg }};color:{{ cl.fg }};border:{{ cl.border }};box-shadow:{{ cl.ring }};transition:transform .12s" style-hover="transform:translateY(-2px)">
+                  <span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">{{ cl.icon }}</span>
+                  <span style="font-size:12.5px;font-weight:800">{{ cl.code }}</span>
+                  <span style="font-size:10px;font-weight:700;opacity:.7">{{ cl.spot }}</span>
+                </button>
+              </sc-for>
+            </div>
+          </sc-for>
+          <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:6px;padding-top:14px;border-top:1px dashed #DCE4DA;font-size:12.5px;color:#5E6F64;font-weight:600"><span>Las bicicletas prestadas conservan su puesto hasta la devolución.</span><span>{{ c.total }} / 30 puestos ocupados</span></div>
+        </div>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:16px">
+        <sc-if value="{{ det.none }}" hint-placeholder-val="{{ true }}">
+          <div style="display:flex;flex-direction:column;align-items:center;text-align:center;gap:10px;padding:30px 10px;color:#5E6F64">
+            <span style="width:54px;height:54px;border-radius:16px;background:#E4F3E8;color:#1E7B4E;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:28px;line-height:1">touch_app</span></span>
+            <div style="font-weight:800;color:#14281D;font-size:15px">Selecciona un puesto</div>
+            <div style="font-size:13px;line-height:1.5">Verás su estado, color, ubicación y las acciones permitidas.</div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ det.show }}" hint-placeholder-val="{{ false }}">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start">
+            <div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:#1E7B4E">{{ det.over }}</div><div style="font-family:'Instrument Serif',serif;font-size:36px;line-height:1.05;margin-top:4px">{{ det.title }}</div></div>
+            <span style="font-size:12px;font-weight:800;padding:6px 11px;border-radius:99px;background:{{ det.pillBg }};color:{{ det.pillFg }}">{{ det.estado }}</span>
+          </div>
+          <div style="display:flex;flex-direction:column;border:1px solid #EEF2EC;border-radius:14px">
+            <sc-for list="{{ det.rows }}" as="r" hint-placeholder-count="4"><div style="display:flex;justify-content:space-between;gap:10px;padding:11px 14px;border-bottom:1px solid #EEF2EC;font-size:13px"><span style="color:#6B7D71;font-weight:600">{{ r.k }}</span><strong style="text-align:right">{{ r.v }}</strong></div></sc-for>
+          </div>
+          <div style="display:flex;flex-direction:column;gap:8px">
+            <sc-for list="{{ det.actions }}" as="a" hint-placeholder-count="2"><button onClick="{{ a.fn }}" style="cursor:pointer;width:100%;padding:12px;border-radius:12px;font-weight:800;font-size:13.5px;background:{{ a.bg }};color:{{ a.fg }};border:{{ a.border }}">{{ a.label }}</button></sc-for>
+          </div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- 3 INVENTARIO -->
+  <sc-if value="{{ is.inventario }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="03 Inventario" style="display:flex;flex-direction:column;gap:18px;animation:bsIn .35s ease">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:#1E7B4E">INVENTARIO GENERAL</div><h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:40px;margin:4px 0 0;line-height:1.05">Bicicletas registradas</h2></div>
+      <button onClick="{{ toggleReg }}" style="display:flex;align-items:center;gap:7px;cursor:pointer;background:#FFFFFF;border:1px solid #CFDDCB;color:#155C3A;font-weight:800;font-size:13px;padding:11px 15px;border-radius:12px"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">add_circle</span>Registrar bicicleta</button>
+    </div>
+    <sc-if value="{{ regOpen }}" hint-placeholder-val="{{ false }}">
+      <div style="background:#E4F0DF;border:1px solid #D2E4CB;border-radius:18px;padding:18px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:12px;align-items:end">
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#3D5045">Código<input value="{{ reg.codigo }}" onChange="{{ onRegCodigo }}" placeholder="Ej. B30" style="padding:11px 12px;border-radius:10px;border:1px solid #CFDDCB;background:#FFFFFF;font-size:14px"></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#3D5045">Color<input value="{{ reg.color }}" onChange="{{ onRegColor }}" placeholder="Ej. Verde" style="padding:11px 12px;border-radius:10px;border:1px solid #CFDDCB;background:#FFFFFF;font-size:14px"></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#3D5045">Fila<select value="{{ reg.fila }}" onChange="{{ onRegFila }}" style="padding:11px 12px;border-radius:10px;border:1px solid #CFDDCB;background:#FFFFFF;font-size:14px"><option value="1">Fila 1</option><option value="2">Fila 2</option><option value="3">Fila 3</option></select></label>
+        <label style="display:flex;flex-direction:column;gap:6px;font-size:12px;font-weight:700;color:#3D5045">Puesto<select value="{{ reg.puesto }}" onChange="{{ onRegPuesto }}" style="padding:11px 12px;border-radius:10px;border:1px solid #CFDDCB;background:#FFFFFF;font-size:14px"><sc-for list="{{ spotNums }}" as="o"><option value="{{ o }}">Puesto {{ o }}</option></sc-for></select></label>
+        <button onClick="{{ doRegister }}" style="cursor:pointer;border:0;background:#1E7B4E;color:#FFFFFF;font-weight:800;font-size:13.5px;padding:12px;border-radius:10px">Registrar</button>
+        <div style="grid-column:1/-1;font-size:12px;color:#3D5045">La estación solo admite 30 bicicletas; el puesto elegido debe estar libre. El código distingue mayúsculas.</div>
+      </div>
+    </sc-if>
+    <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:20px;overflow:hidden">
+      <div style="display:flex;gap:12px;flex-wrap:wrap;align-items:center;padding:16px 18px;border-bottom:1px solid #EEF2EC">
+        <label style="flex:1;min-width:220px;display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid #DCE4DA;border-radius:12px;background:#F7F9F5"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#7A8B80">search</span><input value="{{ invQ }}" onChange="{{ onInvQ }}" placeholder="Buscar por código (ej. B12)" style="flex:1;border:0;background:transparent;padding:11px 0;font-size:14px;box-shadow:none"></label>
+        <div style="display:flex;gap:6px;flex-wrap:wrap">
+          <sc-for list="{{ invFilters }}" as="f" hint-placeholder-count="4"><button onClick="{{ f.fn }}" style="cursor:pointer;padding:9px 13px;border-radius:99px;font-size:12.5px;font-weight:700;background:{{ f.bg }};color:{{ f.fg }};border:{{ f.border }}">{{ f.label }}</button></sc-for>
+        </div>
+      </div>
+      <div style="overflow-x:auto">
+        <div style="min-width:820px">
+          <div style="display:grid;grid-template-columns:1.1fr 1fr 1.1fr 1.2fr 1fr 1.5fr;gap:12px;padding:12px 18px;background:#F7F9F5;font-size:10.5px;font-weight:800;letter-spacing:.12em;color:#7A8B80"><span>BICICLETA</span><span>COLOR</span><span>ESTADO</span><span>UBICACIÓN</span><span>ESTUDIANTE</span><span style="text-align:right">ACCIONES</span></div>
+          <sc-for list="{{ invRows }}" as="r" hint-placeholder-count="8">
+            <div style="display:grid;grid-template-columns:1.1fr 1fr 1.1fr 1.2fr 1fr 1.5fr;gap:12px;padding:12px 18px;border-top:1px solid #EEF2EC;align-items:center;font-size:13.5px" style-hover="background:#FAFCF8">
+              <div style="display:flex;align-items:center;gap:10px"><span style="width:34px;height:34px;border-radius:10px;background:#F2F5EF;display:flex;align-items:center;justify-content:center;color:#155C3A"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">pedal_bike</span></span><strong>{{ r.codigo }}</strong></div>
+              <div style="display:flex;align-items:center;gap:8px;color:#3D5045"><span style="width:14px;height:14px;border-radius:50%;background:{{ r.sw }};border:1px solid rgba(0,0,0,.12)"></span>{{ r.color }}</div>
+              <div><span style="display:inline-flex;align-items:center;gap:6px;font-size:12px;font-weight:800;padding:5px 10px;border-radius:99px;background:{{ r.pillBg }};color:{{ r.pillFg }}"><span style="width:6px;height:6px;border-radius:50%;background:{{ r.dot }}"></span>{{ r.estado }}</span></div>
+              <div style="color:#3D5045">Fila {{ r.fila }} · Puesto {{ r.puesto }}</div>
+              <div style="font-weight:700;color:#245E86">{{ r.est }}</div>
+              <div style="display:flex;justify-content:flex-end;gap:6px">
+                <button onClick="{{ r.primary }}" style="cursor:pointer;border:1px solid #CFDDCB;background:#FFFFFF;color:#155C3A;font-weight:800;font-size:12px;padding:7px 11px;border-radius:9px">{{ r.primaryLabel }}</button>
+                <sc-if value="{{ r.canRetire }}" hint-placeholder-val="{{ false }}"><button onClick="{{ r.retire }}" title="Retirar del inventario" style="cursor:pointer;border:1px solid #EAD9D4;background:#FFFFFF;color:#9A3B28;padding:6px 8px;border-radius:9px;display:flex;align-items:center"><span style="font-family:'Material Symbols Rounded';font-size:17px;line-height:1">delete</span></button></sc-if>
+              </div>
+            </div>
+          </sc-for>
+          <sc-if value="{{ invEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:36px;text-align:center;color:#7A8B80;font-size:14px">No se encontraron bicicletas con esos filtros.</div></sc-if>
+        </div>
+      </div>
+      <div style="padding:12px 18px;border-top:1px solid #EEF2EC;font-size:12.5px;color:#7A8B80;font-weight:600">Mostrando {{ invCount }} de {{ c.total }} bicicletas</div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- 4 PRESTAMOS -->
+  <sc-if value="{{ is.prestamos }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="04 Préstamos" style="display:flex;flex-direction:column;gap:18px;animation:bsIn .35s ease">
+    <div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:#1E7B4E">NUEVA OPERACIÓN</div><h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:40px;margin:4px 0 0;line-height:1.05">Registrar préstamo</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;align-items:start">
+      <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:22px;padding:26px;display:flex;flex-direction:column;gap:18px">
+        <label style="display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:800">Código de bicicleta
+          <div style="display:flex;align-items:center;gap:10px;padding:0 14px;border-radius:13px;background:#F7F9F5;border:{{ lv.bikeBorder }}"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#5E6F64">pedal_bike</span><input value="{{ loanBike }}" onChange="{{ onLoanBike }}" placeholder="Ej. B01" maxlength="12" style="flex:1;border:0;background:transparent;padding:14px 0;font-size:16px;font-weight:700;box-shadow:none;text-transform:uppercase"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:{{ lv.bikeIc }}">{{ lv.bikeIcon }}</span></div>
+          <span style="font-size:12px;font-weight:600;color:{{ lv.bikeColor }}">{{ lv.bikeMsg }}</span>
+        </label>
+        <div style="display:flex;flex-wrap:wrap;gap:6px;margin-top:-6px">
+          <span style="font-size:11.5px;color:#7A8B80;font-weight:700;padding:5px 0">Disponibles:</span>
+          <sc-for list="{{ availChips }}" as="a" hint-placeholder-count="8"><button onClick="{{ a.fn }}" style="cursor:pointer;font-size:12px;font-weight:800;padding:5px 9px;border-radius:8px;background:#E4F3E8;color:#1D6B40;border:1px solid #CBE6D3">{{ a.code }}</button></sc-for>
+        </div>
+        <label style="display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:800">Código estudiantil
+          <div style="display:flex;align-items:center;gap:10px;padding:0 14px;border-radius:13px;background:#F7F9F5;border:{{ lv.stuBorder }}"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#5E6F64">badge</span><input value="{{ loanStu }}" onChange="{{ onLoanStu }}" placeholder="6 dígitos, ej. 202345" inputmode="numeric" maxlength="6" style="flex:1;border:0;background:transparent;padding:14px 0;font-size:16px;font-weight:700;box-shadow:none;letter-spacing:.08em"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:{{ lv.stuIc }}">{{ lv.stuIcon }}</span></div>
+          <span style="font-size:12px;font-weight:600;color:{{ lv.stuColor }}">{{ lv.stuMsg }}</span>
+        </label>
+        <button onClick="{{ doLoan }}" style="cursor:pointer;border:0;background:#1E7B4E;color:#FFFFFF;font-weight:800;font-size:15px;padding:15px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:8px;box-shadow:0 10px 22px -12px rgba(30,123,78,.8)">Confirmar préstamo<span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">arrow_forward</span></button>
+        <div style="font-size:12px;color:#7A8B80;line-height:1.5">Los intentos que no cumplan las reglas quedan registrados en <button onClick="{{ goRej }}" style="border:0;background:none;padding:0;color:#1E7B4E;font-weight:700;cursor:pointer;font-size:12px">Rechazos</button>.</div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <sc-if value="{{ loanRes.ok }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#0E3B2A;color:#FFFFFF;border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:16px;animation:bsIn .3s ease">
+            <div style="display:flex;align-items:center;gap:12px"><span style="width:44px;height:44px;border-radius:14px;background:#C5E68A;color:#0E3B2A;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1">check</span></span><div><div style="font-weight:800;font-size:16px">Préstamo confirmado</div><div style="font-size:12.5px;color:#9FBCA8">Comprobante {{ loanRes.id }}</div></div></div>
+            <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px">
+              <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:12px"><div style="font-size:11px;color:#9FBCA8;font-weight:700">BICICLETA</div><div style="font-size:22px;font-weight:800">{{ loanRes.bici }}</div></div>
+              <div style="background:rgba(255,255,255,.06);border-radius:12px;padding:12px"><div style="font-size:11px;color:#9FBCA8;font-weight:700">ESTUDIANTE</div><div style="font-size:22px;font-weight:800">{{ loanRes.est }}</div></div>
+              <div style="grid-column:1/-1;background:rgba(255,255,255,.06);border-radius:12px;padding:12px"><div style="font-size:11px;color:#9FBCA8;font-weight:700">SALIDA</div><div style="font-size:15px;font-weight:700">{{ loanRes.inicio }} · Fila {{ loanRes.fila }}, puesto {{ loanRes.puesto }}</div></div>
+            </div>
+          </div>
+        </sc-if>
+        <sc-if value="{{ loanRes.err }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#F8E5E0;border:1px solid #EFCFC6;color:#7A2E1F;border-radius:22px;padding:22px;display:flex;gap:14px;align-items:flex-start;animation:bsIn .3s ease">
+            <span style="width:40px;height:40px;flex:none;border-radius:12px;background:#FFFFFF;color:#C4553F;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">block</span></span>
+            <div><div style="font-weight:800;font-size:15px">Préstamo rechazado</div><div style="font-size:13.5px;margin-top:3px;line-height:1.5">{{ loanRes.msg }}</div><div style="font-size:12px;margin-top:8px;color:#9A3B28">El intento se registró en Rechazos.</div></div>
+          </div>
+        </sc-if>
+        <div style="position:relative;border-radius:22px;overflow:hidden;height:260px"><image-slot id="loan-photo" shape="rect" placeholder="Foto: estudiante retirando una bicicleta" style="width:100%;height:100%"></image-slot></div>
+        <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:22px;padding:20px 22px;display:flex;flex-direction:column;gap:10px">
+          <div style="font-weight:800;font-size:14px">Reglas del préstamo</div>
+          <sc-for list="{{ loanRules }}" as="t" hint-placeholder-count="4"><div style="display:flex;gap:10px;font-size:13px;color:#3D5045;line-height:1.45"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1.2;color:#1E7B4E">check_circle</span>{{ t }}</div></sc-for>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- 5 DEVOLUCIONES -->
+  <sc-if value="{{ is.devoluciones }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="05 Devoluciones" style="display:flex;flex-direction:column;gap:18px;animation:bsIn .35s ease">
+    <div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:#1E7B4E">RECEPCIÓN</div><h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:40px;margin:4px 0 0;line-height:1.05">Registrar devolución</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;align-items:start">
+      <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:16px">
+        <label style="display:flex;flex-direction:column;gap:7px;font-size:13px;font-weight:800">Código de bicicleta prestada
+          <div style="display:flex;align-items:center;gap:10px;padding:0 14px;border-radius:13px;background:#F7F9F5;border:1px solid #DCE4DA"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1;color:#5E6F64">keyboard_return</span><input value="{{ retBike }}" onChange="{{ onRetBike }}" placeholder="Ej. B03" maxlength="12" style="flex:1;border:0;background:transparent;padding:14px 0;font-size:16px;font-weight:700;box-shadow:none"></div>
+        </label>
+        <div style="font-size:11px;font-weight:800;letter-spacing:.12em;color:#7A8B80">O SELECCIONA UN PRÉSTAMO ACTIVO</div>
+        <div style="display:flex;flex-direction:column;gap:8px">
+          <sc-for list="{{ activeList }}" as="p" hint-placeholder-count="4">
+            <button onClick="{{ p.pickRet }}" style="cursor:pointer;text-align:left;display:flex;align-items:center;gap:12px;padding:11px 12px;border-radius:13px;background:{{ p.retBg }};border:{{ p.retBorder }}">
+              <span style="width:36px;height:36px;border-radius:10px;background:#E3EEF6;color:#245E86;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">pedal_bike</span></span>
+              <div style="flex:1"><div style="font-weight:800;font-size:13.5px">{{ p.bici }} · Est. {{ p.est }}</div><div style="font-size:12px;color:#7A8B80">Salió {{ p.inicio }}</div></div>
+              <span style="font-size:12px;font-weight:800;color:#245E86">{{ p.elapsed }}</span>
+            </button>
+          </sc-for>
+          <sc-if value="{{ noActive }}" hint-placeholder-val="{{ false }}"><div style="padding:20px;text-align:center;color:#7A8B80;font-size:13px;border:1px dashed #DCE4DA;border-radius:13px">No hay préstamos activos.</div></sc-if>
+        </div>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:22px;padding:24px;display:flex;flex-direction:column;gap:16px">
+          <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:800;font-size:15px">{{ retPrev.heading }}</div><span style="font-size:12px;font-weight:800;padding:5px 10px;border-radius:99px;background:{{ retPrev.pillBg }};color:{{ retPrev.pillFg }}">{{ retPrev.pill }}</span></div>
+          <div style="display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:10px">
+            <sc-for list="{{ retPrev.cells }}" as="k" hint-placeholder-count="5"><div style="background:#F7F9F5;border-radius:13px;padding:13px 14px;grid-column:{{ k.span }}"><div style="font-size:10.5px;font-weight:800;letter-spacing:.1em;color:#7A8B80">{{ k.k }}</div><div style="font-size:{{ k.size }};font-weight:800;margin-top:3px">{{ k.v }}</div></div></sc-for>
+          </div>
+          <button onClick="{{ doReturn }}" style="cursor:pointer;border:0;background:#1E7B4E;color:#FFFFFF;font-weight:800;font-size:15px;padding:15px;border-radius:13px;display:flex;align-items:center;justify-content:center;gap:8px">Confirmar devolución<span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">done_all</span></button>
+        </div>
+        <sc-if value="{{ retRes.ok }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#E4F3E8;border:1px solid #CBE6D3;color:#14281D;border-radius:22px;padding:20px;display:flex;gap:14px;align-items:center;animation:bsIn .3s ease"><span style="width:42px;height:42px;flex:none;border-radius:12px;background:#1E7B4E;color:#FFFFFF;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:24px;line-height:1">check</span></span><div><div style="font-weight:800">Devolución registrada · {{ retRes.bici }}</div><div style="font-size:13px;color:#3D5045;margin-top:2px">Estudiante {{ retRes.est }} · {{ retRes.inicio }} → {{ retRes.fin }} · {{ retRes.dur }}. La bicicleta vuelve a estar disponible.</div></div></div>
+        </sc-if>
+        <sc-if value="{{ retRes.err }}" hint-placeholder-val="{{ false }}">
+          <div style="background:#F8E5E0;border:1px solid #EFCFC6;color:#7A2E1F;border-radius:22px;padding:20px;display:flex;gap:14px;align-items:center;animation:bsIn .3s ease"><span style="font-family:'Material Symbols Rounded';font-size:26px;line-height:1;color:#C4553F">block</span><div><div style="font-weight:800">Devolución rechazada</div><div style="font-size:13px;margin-top:2px">{{ retRes.msg }}</div></div></div>
+        </sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- 6 MANTENIMIENTO -->
+  <sc-if value="{{ is.mantenimiento }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="06 Mantenimiento" style="display:flex;flex-direction:column;gap:18px;animation:bsIn .35s ease">
+    <div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:#1E7B4E">TALLER</div><h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:40px;margin:4px 0 0;line-height:1.05">Mantenimiento</h2><p style="margin:6px 0 0;color:#5E6F64;font-size:14px">Solo una bicicleta disponible puede enviarse a mantenimiento. Al reactivarla, vuelve a estar disponible.</p></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;align-items:start">
+      <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:800;font-size:15px">Enviar a mantenimiento</div><span style="font-size:12px;font-weight:700;color:#7A8B80">{{ c.disponibles }} disponibles</span></div>
+        <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(74px,1fr));gap:8px">
+          <sc-for list="{{ mantAvail }}" as="a" hint-placeholder-count="12"><button onClick="{{ a.fn }}" style="cursor:pointer;padding:11px 6px;border-radius:12px;display:flex;flex-direction:column;align-items:center;gap:3px;background:{{ a.bg }};border:{{ a.border }};color:#1D6B40"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1">pedal_bike</span><span style="font-size:12.5px;font-weight:800">{{ a.code }}</span></button></sc-for>
+        </div>
+        <button onClick="{{ doMant }}" style="cursor:pointer;border:0;background:#C9962F;color:#FFFFFF;font-weight:800;font-size:14px;padding:13px;border-radius:12px;display:flex;align-items:center;justify-content:center;gap:8px"><span style="font-family:'Material Symbols Rounded';font-size:19px;line-height:1">build</span>{{ mantBtn }}</button>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;justify-content:space-between;align-items:center"><div style="font-weight:800;font-size:15px">Fuera de servicio</div><span style="font-size:12px;font-weight:800;padding:5px 10px;border-radius:99px;background:#F7EDD8;color:#8A621A">{{ c.mantenimiento }} en taller</span></div>
+        <sc-for list="{{ mantList }}" as="m" hint-placeholder-count="3">
+          <div style="display:flex;align-items:center;gap:12px;padding:12px;border-radius:14px;background:#FBF6EC;border:1px solid #F0E3C6">
+            <span style="width:40px;height:40px;border-radius:12px;background:#F7EDD8;color:#8A621A;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:21px;line-height:1">handyman</span></span>
+            <div style="flex:1"><div style="font-weight:800;font-size:14px">{{ m.codigo }} · {{ m.color }}</div><div style="font-size:12px;color:#7A8B80">Fila {{ m.fila }} · Puesto {{ m.puesto }}</div></div>
+            <button onClick="{{ m.fn }}" style="cursor:pointer;border:0;background:#1E7B4E;color:#FFFFFF;font-weight:800;font-size:12.5px;padding:9px 13px;border-radius:10px">Reactivar</button>
+          </div>
+        </sc-for>
+        <sc-if value="{{ noMant }}" hint-placeholder-val="{{ false }}"><div style="padding:24px;text-align:center;color:#7A8B80;font-size:13px;border:1px dashed #DCE4DA;border-radius:13px">Todas las bicicletas están en servicio.</div></sc-if>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- 7 HISTORIAL -->
+  <sc-if value="{{ is.historial }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="07 Historial" style="display:flex;flex-direction:column;gap:18px;animation:bsIn .35s ease">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:#1E7B4E">TRAZABILIDAD</div><h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:40px;margin:4px 0 0;line-height:1.05">Historial de movimientos</h2></div>
+      <label style="min-width:240px;display:flex;align-items:center;gap:8px;padding:0 12px;border:1px solid #DCE4DA;border-radius:12px;background:#FFFFFF"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1;color:#7A8B80">filter_alt</span><input value="{{ histQ }}" onChange="{{ onHistQ }}" placeholder="Código exacto (vacío = todas)" style="flex:1;border:0;background:transparent;padding:11px 0;font-size:14px;box-shadow:none"></label>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(300px,1fr));gap:18px;align-items:start">
+      <div style="grid-column:span 2;min-width:0;background:#FFFFFF;border:1px solid #E3E9E1;border-radius:20px;overflow:hidden">
+        <div style="overflow-x:auto"><div style="min-width:640px">
+          <div style="display:grid;grid-template-columns:.8fr 1fr 1.3fr 1.3fr 1fr;gap:12px;padding:12px 18px;background:#F7F9F5;font-size:10.5px;font-weight:800;letter-spacing:.12em;color:#7A8B80"><span>BICICLETA</span><span>ESTUDIANTE</span><span>SALIDA</span><span>DEVOLUCIÓN</span><span>DURACIÓN</span></div>
+          <sc-for list="{{ histRows }}" as="h" hint-placeholder-count="8">
+            <div style="display:grid;grid-template-columns:.8fr 1fr 1.3fr 1.3fr 1fr;gap:12px;padding:12px 18px;border-top:1px solid #EEF2EC;font-size:13.5px;align-items:center">
+              <strong>{{ h.bici }}</strong><span style="color:#3D5045">{{ h.est }}</span><span style="color:#3D5045">{{ h.inicio }}</span><span style="color:#3D5045">{{ h.fin }}</span>
+              <span><span style="font-size:12px;font-weight:800;padding:4px 9px;border-radius:99px;background:{{ h.bg }};color:{{ h.fg }}">{{ h.dur }}</span></span>
+            </div>
+          </sc-for>
+          <sc-if value="{{ histEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:30px;text-align:center;color:#7A8B80;font-size:14px">Esta bicicleta aún no tiene movimientos.</div></sc-if>
+          <sc-if value="{{ histErr }}" hint-placeholder-val="{{ false }}"><div style="padding:30px;text-align:center;color:#9A3B28;font-size:14px;font-weight:700">No existe una bicicleta con ese código.</div></sc-if>
+        </div></div>
+        <div style="padding:12px 18px;border-top:1px solid #EEF2EC;font-size:12.5px;color:#7A8B80;font-weight:600">{{ histCount }} registros</div>
+      </div>
+      <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:20px;padding:22px;display:flex;flex-direction:column;gap:4px">
+        <div style="font-weight:800;font-size:15px;margin-bottom:12px">Línea de tiempo</div>
+        <sc-for list="{{ timeline }}" as="t" hint-placeholder-count="6">
+          <div style="display:flex;gap:12px">
+            <div style="display:flex;flex-direction:column;align-items:center"><span style="width:12px;height:12px;border-radius:50%;margin-top:4px;background:{{ t.dot }};box-shadow:0 0 0 4px {{ t.halo }}"></span><span style="flex:1;width:2px;background:#E3E9E1;margin:4px 0"></span></div>
+            <div style="padding-bottom:16px"><div style="font-size:13.5px;font-weight:800">{{ t.title }}</div><div style="font-size:12px;color:#7A8B80">{{ t.sub }}</div></div>
+          </div>
+        </sc-for>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- 8 ACTIVOS -->
+  <sc-if value="{{ is.activos }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="08 Préstamos activos" style="display:flex;flex-direction:column;gap:18px;animation:bsIn .35s ease">
+    <div style="display:flex;justify-content:space-between;align-items:flex-end;gap:16px;flex-wrap:wrap">
+      <div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:#1E7B4E">SEGUIMIENTO</div><h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:40px;margin:4px 0 0;line-height:1.05">Préstamos activos</h2></div>
+      <span style="font-size:13px;font-weight:800;padding:8px 14px;border-radius:99px;background:#E3EEF6;color:#245E86">{{ c.prestadas }} en curso</span>
+    </div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(250px,1fr));gap:14px">
+      <sc-for list="{{ activeList }}" as="p" hint-placeholder-count="6">
+        <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:20px;padding:18px;display:flex;flex-direction:column;gap:14px">
+          <div style="display:flex;justify-content:space-between;align-items:center">
+            <div style="display:flex;align-items:center;gap:10px"><span style="width:42px;height:42px;border-radius:13px;background:#E3EEF6;color:#245E86;display:flex;align-items:center;justify-content:center"><span style="font-family:'Material Symbols Rounded';font-size:23px;line-height:1">pedal_bike</span></span><div><div style="font-size:20px;font-weight:800;line-height:1">{{ p.bici }}</div><div style="font-size:12px;color:#7A8B80;margin-top:3px">{{ p.ubic }}</div></div></div>
+            <span style="display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:800;padding:5px 10px;border-radius:99px;background:#E3EEF6;color:#245E86"><span style="width:6px;height:6px;border-radius:50%;background:#3A86B8"></span>En curso</span>
+          </div>
+          <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px">
+            <div style="background:#F7F9F5;border-radius:12px;padding:10px 12px"><div style="font-size:10.5px;font-weight:800;color:#7A8B80;letter-spacing:.08em">ESTUDIANTE</div><div style="font-weight:800;font-size:14px">{{ p.est }}</div></div>
+            <div style="background:#F7F9F5;border-radius:12px;padding:10px 12px"><div style="font-size:10.5px;font-weight:800;color:#7A8B80;letter-spacing:.08em">SALIDA</div><div style="font-weight:800;font-size:14px">{{ p.hora }}</div></div>
+          </div>
+          <div style="display:flex;justify-content:space-between;align-items:center"><span style="font-size:13px;color:#3D5045;font-weight:700">⏱ {{ p.elapsed }}</span><button onClick="{{ p.goRet }}" style="cursor:pointer;border:1px solid #CFDDCB;background:#FFFFFF;color:#155C3A;font-weight:800;font-size:12.5px;padding:8px 12px;border-radius:10px">Devolver →</button></div>
+        </div>
+      </sc-for>
+    </div>
+    <sc-if value="{{ noActive }}" hint-placeholder-val="{{ false }}"><div style="background:#FFFFFF;border:1px dashed #CFDDCB;border-radius:20px;padding:40px;text-align:center;color:#5E6F64">No hay préstamos activos. Todas las bicicletas están en la estación.</div></sc-if>
+  </div>
+  </sc-if>
+
+  <!-- 9 RECHAZOS -->
+  <sc-if value="{{ is.rechazos }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="09 Rechazos" style="display:flex;flex-direction:column;gap:18px;animation:bsIn .35s ease">
+    <div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:#C4553F">INCIDENCIAS</div><h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:40px;margin:4px 0 0;line-height:1.05">Intentos rechazados</h2><p style="margin:6px 0 0;color:#5E6F64;font-size:14px">Préstamos que no cumplieron las reglas del sistema. No se crea ningún préstamo.</p></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:12px">
+      <sc-for list="{{ rejSummary }}" as="s" hint-placeholder-count="4"><div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:16px;padding:14px 16px;display:flex;align-items:center;gap:12px"><div style="font-size:26px;font-weight:800;color:#C4553F;min-width:28px">{{ s.n }}</div><div style="font-size:12.5px;color:#3D5045;font-weight:600;line-height:1.35">{{ s.motivo }}</div></div></sc-for>
+    </div>
+    <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:20px;overflow:hidden">
+      <div style="overflow-x:auto"><div style="min-width:760px">
+        <div style="display:grid;grid-template-columns:1.2fr .8fr .9fr 2.6fr;gap:12px;padding:12px 18px;background:#F7F9F5;font-size:10.5px;font-weight:800;letter-spacing:.12em;color:#7A8B80"><span>FECHA Y HORA</span><span>BICICLETA</span><span>ESTUDIANTE</span><span>MOTIVO DEL RECHAZO</span></div>
+        <sc-for list="{{ rejRows }}" as="r" hint-placeholder-count="6">
+          <div style="display:grid;grid-template-columns:1.2fr .8fr .9fr 2.6fr;gap:12px;padding:13px 18px;border-top:1px solid #EEF2EC;font-size:13.5px;align-items:center">
+            <span style="color:#3D5045">{{ r.fecha }}</span><strong>{{ r.bici }}</strong><span style="color:#3D5045;letter-spacing:.06em">{{ r.est }}</span>
+            <span style="display:flex;align-items:center;gap:8px;color:#9A3B28;font-weight:600"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1">error</span>{{ r.motivo }}</span>
+          </div>
+        </sc-for>
+        <sc-if value="{{ rejEmpty }}" hint-placeholder-val="{{ false }}"><div style="padding:30px;text-align:center;color:#7A8B80">No hay intentos rechazados.</div></sc-if>
+      </div></div>
+    </div>
+  </div>
+  </sc-if>
+
+  <!-- 10 CONFIG -->
+  <sc-if value="{{ is.config }}" hint-placeholder-val="{{ false }}">
+  <div data-screen-label="10 Configuración y ayuda" style="display:flex;flex-direction:column;gap:18px;animation:bsIn .35s ease">
+    <div><div style="font-size:11px;font-weight:800;letter-spacing:.14em;color:#1E7B4E">SISTEMA</div><h2 style="font-family:'Instrument Serif',serif;font-weight:400;font-size:40px;margin:4px 0 0;line-height:1.05">Configuración y ayuda</h2></div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(320px,1fr));gap:18px;align-items:start">
+      <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:12px">
+        <div style="font-weight:800;font-size:15px">Reglas implementadas</div>
+        <sc-for list="{{ allRules }}" as="t" hint-placeholder-count="8"><div style="display:flex;gap:10px;font-size:13px;color:#3D5045;line-height:1.45;padding:8px 0;border-top:1px solid #EEF2EC"><span style="font-family:'Material Symbols Rounded';font-size:18px;line-height:1.2;color:#1E7B4E">rule</span>{{ t }}</div></sc-for>
+      </div>
+      <div style="display:flex;flex-direction:column;gap:18px">
+        <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:14px">
+          <div style="font-weight:800;font-size:15px">Identidad de marca</div>
+          <div style="background:#F7F9F5;border-radius:14px;height:96px;padding:12px"><image-slot id="logo-brand" shape="rounded" radius="8" fit="contain" placeholder="Logo oficial Universidad de La Sabana" style="width:100%;height:100%"></image-slot></div>
+          <div style="display:grid;grid-template-columns:repeat(5,minmax(0,1fr));gap:8px">
+            <div style="display:flex;flex-direction:column;gap:5px"><span style="height:46px;border-radius:10px;background:#0E3B2A"></span><span style="font-size:10.5px;font-weight:700;color:#5E6F64">Bosque</span></div>
+            <div style="display:flex;flex-direction:column;gap:5px"><span style="height:46px;border-radius:10px;background:#1E7B4E"></span><span style="font-size:10.5px;font-weight:700;color:#5E6F64">Sabana</span></div>
+            <div style="display:flex;flex-direction:column;gap:5px"><span style="height:46px;border-radius:10px;background:#C5E68A"></span><span style="font-size:10.5px;font-weight:700;color:#5E6F64">Brote</span></div>
+            <div style="display:flex;flex-direction:column;gap:5px"><span style="height:46px;border-radius:10px;background:#E4F0DF"></span><span style="font-size:10.5px;font-weight:700;color:#5E6F64">Pradera</span></div>
+            <div style="display:flex;flex-direction:column;gap:5px"><span style="height:46px;border-radius:10px;background:#F2F5EF;border:1px solid #E3E9E1"></span><span style="font-size:10.5px;font-weight:700;color:#5E6F64">Niebla</span></div>
+          </div>
+          <div style="display:flex;align-items:baseline;gap:14px;flex-wrap:wrap"><span style="font-family:'Instrument Serif',serif;font-size:30px">Instrument Serif</span><span style="font-size:15px;font-weight:700">Manrope</span></div>
+        </div>
+        <div style="background:#0E3B2A;color:#E8F2EA;border-radius:22px;padding:22px;display:flex;flex-direction:column;gap:12px">
+          <div style="font-weight:800;font-size:15px;color:#FFFFFF">Integración prevista</div>
+          <sc-for list="{{ integ }}" as="g" hint-placeholder-count="3"><div style="display:flex;gap:12px;padding:10px 0;border-top:1px solid rgba(255,255,255,.08)"><span style="font-family:'Material Symbols Rounded';font-size:20px;line-height:1.1;color:#C5E68A">{{ g.icon }}</span><div><div style="font-weight:800;font-size:13.5px">{{ g.t }}</div><div style="font-size:12.5px;color:#9FBCA8;line-height:1.45">{{ g.d }}</div></div></div></sc-for>
+        </div>
+        <div style="background:#FFFFFF;border:1px solid #E3E9E1;border-radius:22px;padding:18px 22px;display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap">
+          <div><div style="font-weight:800;font-size:14px">Datos de demostración</div><div style="font-size:12.5px;color:#7A8B80">La carga de 30 bicicletas exige una estación vacía.</div></div>
+          <div style="display:flex;gap:8px;flex-wrap:wrap"><button onClick="{{ clearStation }}" style="cursor:pointer;border:1px solid #EAD9D4;background:#FFFFFF;color:#9A3B28;font-weight:800;font-size:13px;padding:10px 14px;border-radius:11px">Vaciar estación</button><button onClick="{{ loadSample }}" style="cursor:pointer;border:1px solid #CFDDCB;background:#FFFFFF;color:#155C3A;font-weight:800;font-size:13px;padding:10px 14px;border-radius:11px">Cargar 30 de ejemplo</button>
+          <button onClick="{{ resetDemo }}" style="cursor:pointer;border:1px solid #CFDDCB;background:#FFFFFF;color:#155C3A;font-weight:800;font-size:13px;padding:10px 14px;border-radius:11px">Restaurar</button></div>
+        </div>
+      </div>
+    </div>
+  </div>
+  </sc-if>
+
+  </main>
+</div>
+
+<sc-if value="{{ toast }}" hint-placeholder-val="{{ false }}">
+  <div style="position:fixed;right:22px;bottom:22px;z-index:60;max-width:380px;display:flex;align-items:center;gap:12px;padding:14px 16px;border-radius:14px;box-shadow:0 18px 40px -16px rgba(14,59,42,.5);animation:bsIn .25s ease;background:{{ toast.bg }};color:{{ toast.fg }}">
+    <span style="font-family:'Material Symbols Rounded';font-size:22px;line-height:1">{{ toast.icon }}</span><span style="font-size:13.5px;font-weight:700;line-height:1.4">{{ toast.msg }}</span>
+  </div>
+</sc-if>
+</div>
+</x-dc>
+<script type="text/x-dc" data-dc-script>
+const COLORS=["Azul","Rojo","Verde","Amarillo","Negro","Blanco"];
+const SW={Azul:"#4C7BC9",Rojo:"#C9534F",Verde:"#4E9E6A",Amarillo:"#E2BC45",Negro:"#33413A",Blanco:"#F4F6F2"};
+const E={D:"Disponible",P:"Prestada",M:"En mantenimiento"};
+const ST={"Disponible":{bg:"#E4F3E8",fg:"#1D6B40",dot:"#2E9A5E"},"Prestada":{bg:"#E3EEF6",fg:"#245E86",dot:"#3A86B8"},"En mantenimiento":{bg:"#F7EDD8",fg:"#8A621A",dot:"#C9962F"}};
+const MIN=60000;
+const up=c=>String(c??"").trim();
+const NOEX="No existe una bicicleta con ese código.";
+const validarUbicacion=(f,p)=>{if(!Number.isInteger(f)||f<1||f>3)throw new Error("La fila debe ser un número entre 1 y 3.");if(!Number.isInteger(p)||p<1||p>10)throw new Error("El puesto debe ser un número entre 1 y 10.");};
+const okEst=c=>/^[0-9]{6}$/.test(c);
+const fmt=iso=>iso?new Date(iso).toLocaleString("es-CO",{day:"2-digit",month:"short",hour:"2-digit",minute:"2-digit"}):"—";
+const hm=iso=>new Date(iso).toLocaleTimeString("es-CO",{hour:"2-digit",minute:"2-digit"});
+const dur=m=>m==null?"En curso":m<60?`${m} min`:`${Math.floor(m/60)} h ${m%60} min`;
+const MSG_EST="El código estudiantil debe contener exactamente 6 números.",MSG_NODISP="La bicicleta ya está prestada o no está disponible.",MSG_DUP="Este estudiante ya tiene una bicicleta prestada.";
+
+function seed(){
+  const now=Date.now(),iso=a=>new Date(now-a*MIN).toISOString();
+  const bicicletas=[];for(let i=0;i<29;i++)bicicletas.push({codigo:"B"+String(i+1).padStart(2,"0"),color:COLORS[i%6],estado:E.D,fila:Math.floor(i/10)+1,puesto:i%10+1});
+  const find=c=>bicicletas.find(b=>b.codigo===c);
+  const prestamos=[];let n=1;
+  [["B01","201455",690,38],["B05","202901",640,52],["B03","200877",600,21],["B11","203310",560,44],["B14","201702",520,73],["B02","202118",470,29],["B19","200334",430,16],["B22","202555",380,61],["B08","201876",330,34],["B05","203120",290,25],["B24","200991",250,47],["B16","202044",200,18],["B10","201267",150,39],["B27","203401",120,22],["B04","202689",80,31],["B13","200612",1600,55],["B20","201999",1500,42]]
+   .forEach(([b,s,a,d])=>prestamos.push({id:"P"+String(n++).padStart(4,"0"),bicicleta:b,estudiante:s,inicio:iso(a),fin:iso(a-d),activo:false,duracionMinutos:d}));
+  [["B03","202314",42],["B07","201988",95],["B12","203077",18],["B18","200451",130],["B21","202760",61],["B26","201132",7]]
+   .forEach(([b,s,a])=>{find(b).estado=E.P;prestamos.push({id:"P"+String(n++).padStart(4,"0"),bicicleta:b,estudiante:s,inicio:iso(a),fin:null,activo:true,duracionMinutos:null});});
+  ["B09","B15","B28"].forEach(b=>find(b).estado=E.M);
+  const rechazos=[[400,"B45","203001",NOEX],[300,"B04","2023",MSG_EST],[110,"B09","201714",MSG_NODISP],[55,"B07","202952",MSG_NODISP],[30,"B11","202314",MSG_DUP]]
+   .map(([a,b,s,m],i)=>({id:"R"+i,fecha:iso(a),bicicleta:b,estudiante:s,motivo:m}));
+  return {bicicletas,prestamos,rechazos,seq:n};
+}
+
+const Ops={
+  bici:(d,c)=>d.bicicletas.find(b=>b.codigo===up(c))||null,
+  exigir(d,c){const b=Ops.bici(d,c);if(!b)throw new Error(NOEX);return b;},
+  prestar(d,c,est){c=up(c);est=String(est??"").trim();
+    try{
+      if(!okEst(est))throw new Error(MSG_EST);
+      const b=Ops.bici(d,c);
+      if(!b)throw new Error(NOEX);
+      if(b.estado!==E.D)throw new Error(MSG_NODISP);
+      if(d.prestamos.some(p=>p.activo&&p.estudiante===est))throw new Error(MSG_DUP);
+    }catch(e){d.rechazos.push({id:"R"+Date.now(),fecha:new Date().toISOString(),bicicleta:c,estudiante:est,motivo:e.message});throw e;}
+    const b=Ops.bici(d,c);
+    const p={id:"P"+String(d.seq++).padStart(4,"0"),bicicleta:b.codigo,estudiante:est,inicio:new Date().toISOString(),fin:null,activo:true,duracionMinutos:null};
+    b.estado=E.P;d.prestamos.push(p);return {...p,fila:b.fila,puesto:b.puesto};},
+  devolver(d,c){c=up(c);const b=Ops.bici(d,c);
+    if(!b)throw new Error(NOEX);
+    if(b.estado!==E.P)throw new Error("No se puede devolver una bicicleta que no esté prestada.");
+    const p=d.prestamos.find(x=>x.activo&&x.bicicleta===c);
+    if(!p)throw new Error("No se encontró un préstamo activo asociado a la bicicleta.");
+    p.fin=new Date().toISOString();p.activo=false;p.duracionMinutos=Math.max(0,Math.round((new Date(p.fin)-new Date(p.inicio))/MIN));b.estado=E.D;return {...p};},
+  mantenimiento(d,c){const b=Ops.exigir(d,c);if(b.estado!==E.D)throw new Error("Solo se puede enviar a mantenimiento una bicicleta disponible.");b.estado=E.M;return b;},
+  reactivar(d,c){const b=Ops.exigir(d,c);if(b.estado!==E.M)throw new Error("La bicicleta no se encuentra en mantenimiento.");b.estado=E.D;return b;},
+  registrar(d,{codigo,color,fila,puesto}){codigo=up(codigo);color=String(color??"").trim();fila=Number(fila);puesto=Number(puesto);
+    if(!codigo)throw new Error("El código de la bicicleta no puede estar vacío.");
+    if(!color)throw new Error("El color no puede estar vacío.");
+    if(Ops.bici(d,codigo))throw new Error("Ya existe una bicicleta con ese código.");
+    validarUbicacion(fila,puesto);
+    if(d.bicicletas.length>=30)throw new Error("La estación solo admite 30 bicicletas.");
+    if(d.bicicletas.some(b=>b.fila===fila&&b.puesto===puesto))throw new Error("Ese puesto ya está ocupado por otra bicicleta.");
+    const b={codigo,color,fila,puesto,estado:E.D};d.bicicletas.push(b);return b;},
+  mover(d,c,fila,puesto){const b=Ops.exigir(d,c);validarUbicacion(fila,puesto);
+    if(b.estado===E.P)throw new Error("No se puede mover una bicicleta prestada.");
+    if(d.bicicletas.some(x=>x!==b&&x.fila===fila&&x.puesto===puesto))throw new Error("Ese puesto ya está ocupado por otra bicicleta.");
+    b.fila=fila;b.puesto=puesto;return b;},
+  retirar(d,c){const b=Ops.exigir(d,c);if(b.estado===E.P)throw new Error("No se puede retirar una bicicleta con préstamo activo.");d.bicicletas=d.bicicletas.filter(x=>x.codigo!==b.codigo);return b;},
+  cargarEjemplo(d){if(d.bicicletas.length)throw new Error("La estación debe estar vacía para cargar la demostración.");for(let n=1;n<=30;n++)Ops.registrar(d,{codigo:"B"+String(n).padStart(2,"0"),color:COLORS[(n-1)%6],fila:Math.floor((n-1)/10)+1,puesto:(n-1)%10+1});}
+};
+
+class Component extends DCLogic {
+  state={screen:"dashboard",data:seed(),online:false,connecting:false,now:Date.now(),sel:null,invQ:"",invF:"Todos",loanBike:"",loanStu:"",loanRes:null,retBike:"",retRes:null,histQ:"",toast:null,regOpen:false,reg:{codigo:"",color:"Verde",fila:"3",puesto:"10"},mantSel:"",moveFrom:null,narrow:false,menu:false};
+  componentDidMount(){
+    this.onResize=()=>this.setState({narrow:window.innerWidth<960});this.onResize();
+    window.addEventListener("resize",this.onResize);
+    this.tick=setInterval(()=>this.setState({now:Date.now()}),30000);
+    // Refresca la estación compartida cada 15 segundos si hay conexión.
+    this.syncTick=setInterval(async()=>{
+      if(!this.state.online||!this.accessKey||this.busy)return;
+      try{const latest=await this.api("/api/estado");this.setState({data:this.adaptRemote(latest)});}catch(_e){}
+    },15000);
+    try{const key=window.sessionStorage.getItem("bicisabana_operador");if(key)this.connect(key);}catch(_e){}
+  }
+  componentWillUnmount(){window.removeEventListener("resize",this.onResize);clearInterval(this.tick);clearInterval(this.syncTick);clearTimeout(this.tt);}
+  // Datos de Supabase -> nombres que usa el diseño original de Claude.
+  adaptRemote(d){return {
+    bicicletas:(d.bicicletas||[]).map(b=>({...b,fila:Number(b.fila),puesto:Number(b.puesto)})),
+    prestamos:(d.prestamos||[]).map(p=>({id:p.id,bicicleta:p.bicicleta,estudiante:p.estudiante,
+      inicio:p.fecha_inicio,fin:p.fecha_fin,activo:p.activo,duracionMinutos:p.duracion_minutos})),
+    rechazos:d.rechazos||[],seq:1
+  };}
+  async api(path,method="GET",body,key=this.accessKey){
+    const options={method,headers:{"X-BiciSabana-Access":key||"","Accept":"application/json"},cache:"no-store"};
+    if(method!=="GET"){options.headers["Content-Type"]="application/json";options.body=JSON.stringify(body||{});}
+    const response=await fetch(path,options);
+    let json;
+    try{json=await response.json();}catch(_e){throw new Error("No se pudo leer la respuesta del servidor Python.");}
+    if(!response.ok||!json.ok)throw new Error(json.error||"Operación no completada.");
+    return json.resultado;
+  }
+  async connect(key){
+    this.setState({connecting:true});
+    try{
+      const remoto=await this.api("/api/estado","GET",null,key);
+      this.accessKey=key;
+      try{window.sessionStorage.setItem("bicisabana_operador",key);}catch(_e){}
+      this.setState({data:this.adaptRemote(remoto),online:true,connecting:false,sel:null,
+        toast:{ok:true,msg:"Conectado a Python y Supabase. Los cambios se guardarán para todos los monitores."}});
+      this.flash();
+    }catch(e){
+      this.setState({online:false,connecting:false,toast:{ok:false,msg:"No conectado: "+e.message}});
+      this.flash();
+    }
+  }
+  connectAction(){
+    if(this.state.online){
+      if(!window.confirm("¿Desconectar la estación real y volver a una demostración local?"))return;
+      this.accessKey=null;
+      try{window.sessionStorage.removeItem("bicisabana_operador");}catch(_e){}
+      this.setState({online:false,data:seed(),sel:null,toast:{ok:true,msg:"Modo demostración activado. Los datos reales permanecen en Supabase."}});
+      this.flash();return;
+    }
+    const clave=window.prompt("Clave de operador de BiciSabana (configurada en Vercel):");
+    if(clave===null)return;
+    if(!clave.trim()){this.setState({toast:{ok:false,msg:"Debes escribir la clave de operador."}});this.flash();return;}
+    this.connect(clave.trim());
+  }
+  capture(fn){
+    // En modo conectado capturamos la acción sin ejecutar la lógica simulada.
+    // La operación se ejecuta exclusivamente en backend/bicisabana.py.
+    const names=["prestar","devolver","registrar","mantenimiento","reactivar","mover","retirar","cargarEjemplo"];
+    const originals={};let captured=null;
+    for(const name of names){originals[name]=Ops[name];Ops[name]=(...args)=>{captured={name,args:args.slice(1)};};}
+    try{fn({});}finally{for(const name of names)Ops[name]=originals[name];}
+    if(!captured)throw new Error("Operación no reconocida por el servidor.");
+    const {name,args}=captured;
+    const paths={prestar:"/api/prestamos",devolver:"/api/devoluciones",registrar:"/api/bicicletas",
+      mantenimiento:"/api/mantenimiento",reactivar:"/api/reactivar",mover:"/api/mover",
+      retirar:"/api/retirar",cargarEjemplo:"/api/cargar-ejemplo"};
+    const body=name==="prestar"?{bicicleta:args[0],estudiante:args[1]}:
+      name==="registrar"?args[0]:name==="mover"?{bicicleta:args[0],fila:Number(args[1]),puesto:Number(args[2])}:
+      name==="cargarEjemplo"?{}:{bicicleta:args[0]};
+    return {name,path:paths[name],body};
+  }
+  adaptResult(name,row,previous){
+    if(name==="prestar"){
+      const b=previous.bicicletas.find(x=>x.codigo===row.bicicleta);
+      return {id:row.id,bicicleta:row.bicicleta,estudiante:row.estudiante,
+        inicio:row.fecha_inicio,fin:row.fecha_fin,activo:row.activo,
+        duracionMinutos:row.duracion_minutos,fila:b?.fila,puesto:b?.puesto};
+    }
+    if(name==="devolver")return {id:row.id,bicicleta:row.bicicleta,estudiante:row.estudiante,
+      inicio:row.fecha_inicio,fin:row.fecha_fin,activo:row.activo,duracionMinutos:row.duracion_minutos};
+    return row;
+  }
+  async run(fn,okMsg,extra){
+    if(this.state.online){
+      if(this.busy)return null;
+      this.busy=true;
+      try{
+        const {name,path,body}=this.capture(fn);
+        const row=await this.api(path,"POST",body);
+        const result=this.adaptResult(name,row,this.state.data);
+        const latest=await this.api("/api/estado");
+        this.setState({data:this.adaptRemote(latest),now:Date.now(),
+          toast:{ok:true,msg:typeof okMsg==="function"?okMsg(result):okMsg},
+          ...(extra?extra(result,null):{})});
+        this.flash();return result;
+      }catch(e){
+        this.setState({now:Date.now(),toast:{ok:false,msg:e.message},
+          ...(extra?extra(null,e):{})});this.flash();return null;
+      }finally{this.busy=false;}
+    }
+    const d=JSON.parse(JSON.stringify(this.state.data));
+    try{const r=fn(d);this.setState({data:d,now:Date.now(),toast:{ok:true,msg:typeof okMsg==="function"?okMsg(r):okMsg},...(extra?extra(r,null):{})});this.flash();return r;}
+    catch(e){this.setState({data:d,now:Date.now(),toast:{ok:false,msg:e.message},...(extra?extra(null,e):{})});this.flash();return null;}
+  }
+  flash(){clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toast:null}),4200);}
+  go(screen,extra={}){this.setState({screen,menu:false,...extra});try{window.scrollTo({top:0,behavior:"smooth"});}catch(e){}}
+
+  renderVals(){
+    const s=this.state,d=s.data,now=s.now;
+    const c={total:d.bicicletas.length,disponibles:0,prestadas:0,mantenimiento:0};
+    d.bicicletas.forEach(b=>{if(b.estado===E.D)c.disponibles++;else if(b.estado===E.P)c.prestadas++;else c.mantenimiento++;});
+    c.vacios=30-c.total;
+    const activos=d.prestamos.filter(p=>p.activo).sort((a,b)=>b.inicio.localeCompare(a.inicio));
+    const loanOf=code=>activos.find(p=>p.bicicleta===code);
+    const elapsed=iso=>dur(Math.max(0,Math.round((now-new Date(iso))/MIN)));
+
+    const navDef=[["dashboard","Dashboard","space_dashboard"],["mapa","Mapa de estación","grid_view"],["inventario","Inventario","inventory_2"],["prestamos","Préstamos","output"],["devoluciones","Devoluciones","input"],["mantenimiento","Mantenimiento","build"]];
+    const ctlDef=[["historial","Historial","history"],["activos","Préstamos activos","timer",c.prestadas],["rechazos","Rechazos","report",d.rechazos.length],["config","Configuración / ayuda","settings"]];
+    const mkNav=([k,label,icon,badge])=>({label,icon,badge:badge||false,bg:s.screen===k?"rgba(197,230,138,.12)":"transparent",fg:s.screen===k?"#FFFFFF":"#B9CDBF",go:()=>this.go(k)});
+    const titles={dashboard:"Dashboard",mapa:"Mapa de estación",inventario:"Inventario",prestamos:"Préstamos",devoluciones:"Devoluciones",mantenimiento:"Mantenimiento",historial:"Historial",activos:"Préstamos activos",rechazos:"Rechazos",config:"Configuración / ayuda"};
+    const is={};Object.keys(titles).forEach(k=>is[k]=s.screen===k);
+
+    // metrics
+    const metrics=[
+      {label:"Bicicletas disponibles",value:c.disponibles,note:"Listas para prestar",icon:"check_circle",bg:"#E4F3E8",fg:"#1D6B40",go:()=>this.go("inventario",{invF:E.D})},
+      {label:"Bicicletas prestadas",value:c.prestadas,note:"En circulación por el campus",icon:"directions_bike",bg:"#E3EEF6",fg:"#245E86",go:()=>this.go("inventario",{invF:E.P})},
+      {label:"En mantenimiento",value:c.mantenimiento,note:"Fuera de servicio",icon:"build",bg:"#F7EDD8",fg:"#8A621A",go:()=>this.go("mantenimiento")},
+      {label:"Préstamos activos",value:activos.length,note:"Sin devolución registrada",icon:"timer",bg:"#E3EEF6",fg:"#245E86",go:()=>this.go("activos")},
+      {label:"Intentos rechazados",value:d.rechazos.length,note:"Ver motivos",icon:"report",bg:"#F8E5E0",fg:"#9A3B28",go:()=>this.go("rechazos")},
+      {label:"Total registradas",value:c.total,note:`Capacidad 30 · ${c.vacios} libre(s)`,icon:"pedal_bike",bg:"#0E3B2A",fg:"#C5E68A",go:()=>this.go("inventario",{invF:"Todos"})}];
+
+    // bars last 12h
+    const hNow=new Date(now);hNow.setMinutes(0,0,0);
+    const buckets=Array.from({length:12},(_,i)=>{const st=hNow.getTime()-(11-i)*3600000;return {st,v:0,label:new Date(st).getHours()+"h"};});
+    d.prestamos.forEach(p=>{const t=new Date(p.inicio).getTime();const bk=buckets.find(b=>t>=b.st&&t<b.st+3600000);if(bk)bk.v++;});
+    const maxV=Math.max(1,...buckets.map(b=>b.v));
+    const bars=buckets.map((b,i)=>({v:b.v,label:b.label,h:Math.max(4,b.v/maxV*82)+"%",c:i===11?"#8FC95F":"#1E7B4E"}));
+    const todayLoans=buckets.reduce((a,b)=>a+b.v,0);
+    const done=d.prestamos.filter(p=>!p.activo);
+    const avg=done.length?Math.round(done.reduce((a,p)=>a+p.duracionMinutos,0)/done.length):0;
+
+    const p1=c.disponibles/30*100,p2=p1+c.prestadas/30*100,p3=p2+c.mantenimiento/30*100;
+    const donutBg=`conic-gradient(#2E9A5E 0 ${p1}%,#3A86B8 ${p1}% ${p2}%,#C9962F ${p2}% ${p3}%,#E3E9E1 ${p3}% 100%)`;
+    const legend=[{label:"Disponible",v:c.disponibles,color:"#2E9A5E",border:"0"},{label:"Prestada",v:c.prestadas,color:"#3A86B8",border:"0"},{label:"Mantenimiento",v:c.mantenimiento,color:"#C9962F",border:"0"},{label:"Vacío",v:c.vacios,color:"#FFFFFF",border:"1.5px dashed #AAB9AE"}];
+
+    const events=[];d.prestamos.forEach(p=>{events.push({t:p.inicio,type:"out",p});if(p.fin)events.push({t:p.fin,type:"in",p});});
+    events.sort((a,b)=>b.t.localeCompare(a.t));
+    const evView=e=>e.type==="out"?{icon:"output",bg:"#E3EEF6",fg:"#245E86",title:`Salida · ${e.p.bicicleta}`,sub:`Estudiante ${e.p.estudiante}`,time:hm(e.t)}:{icon:"input",bg:"#E4F3E8",fg:"#1D6B40",title:`Devolución · ${e.p.bicicleta}`,sub:`Estudiante ${e.p.estudiante} · ${dur(e.p.duracionMinutos)}`,time:hm(e.t)};
+    const recent=events.slice(0,5).map(evView);
+
+    // map
+    const mapRows=[1,2,3].map(f=>({label:"FILA "+f,cells:Array.from({length:10},(_,j)=>{const p=j+1,b=d.bicicletas.find(x=>x.fila===f&&x.puesto===p);
+      const selOn=s.sel&&s.sel.f===f&&s.sel.p===p,spot="P"+String(p).padStart(2,"0");
+      const pick=()=>{if(s.moveFrom&&!b){const code=s.moveFrom;this.run(dd=>Ops.mover(dd,code,f,p),r=>`${r.codigo} movida a fila ${r.fila}, puesto ${r.puesto}.`,r=>r?{moveFrom:null,sel:{f,p}}:{moveFrom:null});return;}this.setState({sel:{f,p},moveFrom:null});};
+      if(!b)return {pick,spot,code:"Libre",icon:"add",title:`Puesto libre · Fila ${f}, puesto ${p}`,bg:"#FAFBF8",fg:"#8FA597",border:"1.5px dashed #C9D3C8",ring:selOn?"0 0 0 3px #1E7B4E":"none",mini:"#FFFFFF",miniBorder:"1.5px dashed #AAB9AE"};
+      const st=ST[b.estado];
+      return {pick,spot,code:b.codigo,icon:b.estado===E.M?"build":"pedal_bike",title:`${b.codigo} · ${b.estado} · F${f} P${p}`,bg:st.bg,fg:st.fg,border:`1.5px solid ${st.dot}55`,ring:selOn?`0 0 0 3px ${st.dot}`:"none",mini:st.dot,miniBorder:"0"};})}));
+    let det={none:true,show:false};
+    if(s.sel){const {f,p}=s.sel,b=d.bicicletas.find(x=>x.fila===f&&x.puesto===p);
+      const prim={bg:"#1E7B4E",fg:"#FFFFFF",border:"0"},sec={bg:"#FFFFFF",fg:"#155C3A",border:"1px solid #CFDDCB"};
+      if(!b)det={none:false,show:true,over:`FILA ${f} · PUESTO ${p}`,title:"Puesto libre",estado:"Vacío",pillBg:"#F2F5EF",pillFg:"#5E6F64",rows:[{k:"Ubicación",v:`Fila ${f}, puesto ${p}`},{k:"Capacidad usada",v:`${c.total} / 30`}],
+        actions:[{label:"Registrar bicicleta aquí",...prim,fn:()=>this.go("inventario",{regOpen:true,reg:{...s.reg,fila:String(f),puesto:String(p)}})}]};
+      else{const st=ST[b.estado],ln=loanOf(b.codigo),mov=d.prestamos.filter(x=>x.bicicleta===b.codigo).length;
+        const acts=b.estado===E.D?[{label:"Prestar esta bicicleta",...prim,fn:()=>this.go("prestamos",{loanBike:b.codigo,loanRes:null})},{label:"Enviar a mantenimiento",...sec,fn:()=>this.run(dd=>Ops.mantenimiento(dd,b.codigo),`${b.codigo} enviada a mantenimiento.`)}]
+          :b.estado===E.P?[{label:"Registrar devolución",...prim,fn:()=>this.go("devoluciones",{retBike:b.codigo,retRes:null})}]
+          :[{label:"Reactivar bicicleta",...prim,fn:()=>this.run(dd=>Ops.reactivar(dd,b.codigo),`${b.codigo} reactivada y disponible.`)}];
+        if(b.estado!==E.P)acts.push({label:s.moveFrom===b.codigo?"Elige un puesto libre en el mapa…":"Mover de puesto",...sec,fn:()=>this.setState({moveFrom:s.moveFrom===b.codigo?null:b.codigo})});
+        acts.push({label:"Ver historial",...sec,fn:()=>this.go("historial",{histQ:b.codigo})});
+        det={none:false,show:true,over:`FILA ${f} · PUESTO ${p}`,title:`Bicicleta ${b.codigo}`,estado:b.estado,pillBg:st.bg,pillFg:st.fg,
+          rows:[{k:"Color",v:b.color},{k:"Ubicación",v:`Fila ${f}, puesto ${p}`},{k:"Estudiante",v:ln?ln.estudiante:"Sin préstamo activo"},...(ln?[{k:"Salida",v:`${fmt(ln.inicio)} · ${elapsed(ln.inicio)}`}]:[]),{k:"Movimientos registrados",v:String(mov)}],actions:acts};}}
+
+    // inventory
+    const q=up(s.invQ);
+    const inv=d.bicicletas.filter(b=>b.codigo.includes(q)&&(s.invF==="Todos"||b.estado===s.invF)).sort((a,b)=>a.codigo.localeCompare(b.codigo,"es",{numeric:true}));
+    const invRows=inv.map(b=>{const st=ST[b.estado],ln=loanOf(b.codigo);
+      const primary=b.estado===E.D?()=>this.go("prestamos",{loanBike:b.codigo,loanRes:null}):b.estado===E.P?()=>this.go("devoluciones",{retBike:b.codigo,retRes:null}):()=>this.run(dd=>Ops.reactivar(dd,b.codigo),`${b.codigo} reactivada y disponible.`);
+      return {...b,sw:SW[b.color]||"#A1B3A8",pillBg:st.bg,pillFg:st.fg,dot:st.dot,est:ln?ln.estudiante:"—",primary,primaryLabel:b.estado===E.D?"Prestar":b.estado===E.P?"Devolver":"Reactivar",canRetire:b.estado!==E.P,
+        retire:()=>{if(window.confirm(`¿Retirar la bicicleta ${b.codigo} del inventario? Los préstamos históricos se conservarán.`))this.run(dd=>Ops.retirar(dd,b.codigo),`${b.codigo} retirada del inventario.`);}};});
+    const invFilters=[["Todos","Todas"],[E.D,"Disponibles"],[E.P,"Prestadas"],[E.M,"Mantenimiento"]].map(([v,l])=>({label:l,fn:()=>this.setState({invF:v}),bg:s.invF===v?"#0E3B2A":"#FFFFFF",fg:s.invF===v?"#FFFFFF":"#3D5045",border:s.invF===v?"1px solid #0E3B2A":"1px solid #DCE4DA"}));
+
+    // loan validation
+    const red="#C4553F",grn="#1E7B4E",mut="#7A8B80";
+    const lv={};const lb=up(s.loanBike),ls=s.loanStu.trim();
+    if(!lb)Object.assign(lv,{bikeMsg:"Escribe el código o elige una bicicleta disponible.",bikeColor:mut,bikeBorder:"1px solid #DCE4DA",bikeIcon:"",bikeIc:mut});
+    else{const b=Ops.bici(d,lb);const bad=m=>Object.assign(lv,{bikeMsg:m,bikeColor:red,bikeBorder:`1.5px solid ${red}`,bikeIcon:"error",bikeIc:red});
+      if(!b)bad(NOEX);else if(b.estado!==E.D)bad(`${MSG_NODISP} (Estado: ${b.estado})`);
+      else Object.assign(lv,{bikeMsg:`Disponible · ${b.color} · Fila ${b.fila}, puesto ${b.puesto}`,bikeColor:grn,bikeBorder:`1.5px solid ${grn}`,bikeIcon:"check_circle",bikeIc:grn});}
+    if(!ls)Object.assign(lv,{stuMsg:"Exactamente 6 dígitos numéricos.",stuColor:mut,stuBorder:"1px solid #DCE4DA",stuIcon:"",stuIc:mut});
+    else{const bad=m=>Object.assign(lv,{stuMsg:m,stuColor:red,stuBorder:`1.5px solid ${red}`,stuIcon:"error",stuIc:red});
+      if(!okEst(ls))bad(MSG_EST);
+      else if(activos.some(p=>p.estudiante===ls))bad(MSG_DUP);
+      else Object.assign(lv,{stuMsg:"Código válido · sin préstamos activos",stuColor:grn,stuBorder:`1.5px solid ${grn}`,stuIcon:"check_circle",stuIc:grn});}
+    const availB=d.bicicletas.filter(b=>b.estado===E.D).sort((a,b)=>a.codigo.localeCompare(b.codigo,"es",{numeric:true}));
+    const availChips=availB.slice(0,12).map(b=>({code:b.codigo,fn:()=>this.setState({loanBike:b.codigo})}));
+    const lr=s.loanRes;
+    const loanRes=lr?(lr.ok?{ok:true,err:false,id:lr.p.id,bici:lr.p.bicicleta,est:lr.p.estudiante,inicio:fmt(lr.p.inicio),fila:lr.p.fila,puesto:lr.p.puesto}:{ok:false,err:true,msg:lr.msg}):{ok:false,err:false};
+
+    // returns
+    const rb=up(s.retBike),rl=loanOf(rb);
+    const activeList=activos.map(p=>{const b=Ops.bici(d,p.bicicleta);return {bici:p.bicicleta,est:p.estudiante,inicio:fmt(p.inicio),hora:hm(p.inicio),elapsed:elapsed(p.inicio),ubic:b?`Fila ${b.fila} · Puesto ${b.puesto}`:"",
+      retBg:rb===p.bicicleta?"#E4F3E8":"#FFFFFF",retBorder:rb===p.bicicleta?"1.5px solid #1E7B4E":"1px solid #E3E9E1",pickRet:()=>this.setState({retBike:p.bicicleta,retRes:null}),goRet:()=>this.go("devoluciones",{retBike:p.bicicleta,retRes:null})};});
+    const retPrev=rl?{heading:"Resumen de la devolución",pill:"Préstamo activo",pillBg:"#E3EEF6",pillFg:"#245E86",cells:[{k:"BICICLETA",v:rl.bicicleta,size:"22px",span:"auto"},{k:"ESTUDIANTE",v:rl.estudiante,size:"22px",span:"auto"},{k:"SALIDA",v:fmt(rl.inicio),size:"14px",span:"auto"},{k:"DEVOLUCIÓN",v:"Ahora · "+hm(new Date(now).toISOString()),size:"14px",span:"auto"},{k:"DURACIÓN DEL PRÉSTAMO",v:elapsed(rl.inicio),size:"22px",span:"1 / -1"}]}
+      :{heading:"Resumen de la devolución",pill:rb?"Sin préstamo activo":"Esperando bicicleta",pillBg:rb?"#F8E5E0":"#F2F5EF",pillFg:rb?"#9A3B28":"#5E6F64",cells:[{k:"BICICLETA",v:rb||"—",size:"22px",span:"auto"},{k:"ESTUDIANTE",v:"—",size:"22px",span:"auto"},{k:"SALIDA",v:"—",size:"14px",span:"auto"},{k:"DEVOLUCIÓN",v:"—",size:"14px",span:"auto"},{k:"DURACIÓN DEL PRÉSTAMO",v:"—",size:"22px",span:"1 / -1"}]};
+    const rr=s.retRes;
+    const retRes=rr?(rr.ok?{ok:true,err:false,bici:rr.p.bicicleta,est:rr.p.estudiante,inicio:hm(rr.p.inicio),fin:hm(rr.p.fin),dur:dur(rr.p.duracionMinutos)}:{ok:false,err:true,msg:rr.msg}):{ok:false,err:false};
+
+    // maintenance
+    const mantAvail=availB.map(b=>({code:b.codigo,fn:()=>this.setState({mantSel:b.codigo}),bg:s.mantSel===b.codigo?"#F7EDD8":"#F4FAF5",border:s.mantSel===b.codigo?"1.5px solid #C9962F":"1px solid #DCEBDF"}));
+    const mantList=d.bicicletas.filter(b=>b.estado===E.M).map(b=>({...b,fn:()=>this.run(dd=>Ops.reactivar(dd,b.codigo),`${b.codigo} reactivada y disponible.`)}));
+
+    // history
+    const hq=up(s.histQ);
+    const histErr=!!hq&&!Ops.bici(d,hq)&&!d.prestamos.some(p=>p.bicicleta===hq);
+    const hist=d.prestamos.filter(p=>!hq||p.bicicleta===hq).sort((a,b)=>b.inicio.localeCompare(a.inicio));
+    const histRows=hist.map(p=>({bici:p.bicicleta,est:p.estudiante,inicio:fmt(p.inicio),fin:fmt(p.fin),dur:p.activo?"En curso":dur(p.duracionMinutos),bg:p.activo?"#E3EEF6":"#F2F5EF",fg:p.activo?"#245E86":"#3D5045"}));
+    const timeline=events.filter(e=>!hq||e.p.bicicleta===hq).slice(0,8).map(e=>{const v=evView(e);return {title:v.title,sub:`${fmt(e.t)} · ${v.sub}`,dot:e.type==="out"?"#3A86B8":"#2E9A5E",halo:e.type==="out"?"#E3EEF6":"#E4F3E8"};});
+
+    // rejections
+    const rejRows=d.rechazos.slice().reverse().map(r=>({fecha:fmt(r.fecha),bici:r.bicicleta||"—",est:r.estudiante||"—",motivo:r.motivo}));
+    const cnt={};d.rechazos.forEach(r=>cnt[r.motivo]=(cnt[r.motivo]||0)+1);
+    const rejSummary=Object.entries(cnt).sort((a,b)=>b[1]-a[1]).slice(0,4).map(([motivo,n])=>({motivo,n}));
+
+    const dl=new Date(now).toLocaleDateString("es-CO",{weekday:"long",day:"numeric",month:"long"});
+    return {
+      c,is,screenTitle:titles[s.screen],todayLabel:dl.charAt(0).toUpperCase()+dl.slice(1),
+      demoMode:!s.online,liveMode:s.online,connectionLabel:s.connecting?"Conectando…":s.online?"● EN LÍNEA":"○ MODO DEMO",connectAction:()=>this.connectAction(),
+      navOps:navDef.map(mkNav),navCtl:ctlDef.map(mkNav),
+      narrow:s.narrow,sidePos:s.narrow?"fixed":"sticky",sideLeft:s.narrow?(s.menu?"0":"-280px"):"0",showScrim:s.narrow&&s.menu,
+      openMenu:()=>this.setState({menu:true}),closeMenu:()=>this.setState({menu:false}),
+      goLoan:()=>this.go("prestamos",{loanRes:null}),goMap:()=>this.go("mapa"),goHist:()=>this.go("historial"),goRej:()=>this.go("rechazos"),
+      metrics,bars,todayLoans,avgDur:dur(avg),occPct:Math.round(c.prestadas/Math.max(1,c.total)*100),donutBg,legend,recent,
+      moveFrom:s.moveFrom||false,cancelMove:()=>this.setState({moveFrom:null}),mapRows,spotHeads:Array.from({length:10},(_,i)=>"P"+String(i+1).padStart(2,"0")),det,
+      invQ:s.invQ,onInvQ:e=>this.setState({invQ:e.target.value}),invFilters,invRows,invEmpty:!invRows.length,invCount:invRows.length,
+      regOpen:s.regOpen,reg:s.reg,toggleReg:()=>this.setState({regOpen:!s.regOpen}),colorOpts:COLORS,spotNums:Array.from({length:10},(_,i)=>String(i+1)),
+      onRegCodigo:e=>this.setState({reg:{...s.reg,codigo:e.target.value}}),onRegColor:e=>this.setState({reg:{...s.reg,color:e.target.value}}),
+      onRegFila:e=>this.setState({reg:{...s.reg,fila:e.target.value}}),onRegPuesto:e=>this.setState({reg:{...s.reg,puesto:e.target.value}}),
+      doRegister:()=>this.run(dd=>Ops.registrar(dd,s.reg),r=>`Bicicleta ${r.codigo} registrada en fila ${r.fila}, puesto ${r.puesto}.`,r=>r?{reg:{...s.reg,codigo:""},regOpen:false}:{}),
+      loanBike:s.loanBike,loanStu:s.loanStu,onLoanBike:e=>this.setState({loanBike:e.target.value}),onLoanStu:e=>this.setState({loanStu:e.target.value.slice(0,6)}),
+      lv,availChips,loanRes,
+      loanRules:["El código estudiantil debe contener exactamente 6 números.","La bicicleta debe existir y estar en estado Disponible.","Cada estudiante puede tener solo un préstamo activo.","Al confirmar, la bicicleta pasa a Prestada y se guarda la hora de salida."],
+      doLoan:()=>this.run(dd=>Ops.prestar(dd,s.loanBike,s.loanStu),r=>`Préstamo registrado: ${r.bicicleta} para el estudiante ${r.estudiante}.`,(r,e)=>r?{loanRes:{ok:true,p:r},loanBike:"",loanStu:""}:{loanRes:{ok:false,msg:e.message}}),
+      retBike:s.retBike,onRetBike:e=>this.setState({retBike:e.target.value,retRes:null}),activeList,noActive:!activeList.length,retPrev,retRes,
+      doReturn:()=>this.run(dd=>Ops.devolver(dd,s.retBike),r=>`Devolución registrada: ${r.bicicleta}. Duración ${dur(r.duracionMinutos)}.`,(r,e)=>r?{retRes:{ok:true,p:r},retBike:""}:{retRes:{ok:false,msg:e.message}}),
+      mantAvail,mantList,noMant:!mantList.length,mantBtn:s.mantSel?`Enviar ${s.mantSel} a mantenimiento`:"Selecciona una bicicleta",
+      doMant:()=>{if(!s.mantSel)return this.setState({toast:{ok:false,msg:"Selecciona una bicicleta disponible."}},()=>this.flash());this.run(dd=>Ops.mantenimiento(dd,s.mantSel),`${s.mantSel} enviada a mantenimiento.`,r=>r?{mantSel:""}:{});},
+      histQ:s.histQ,onHistQ:e=>this.setState({histQ:e.target.value}),histRows,histEmpty:!histRows.length&&!histErr,histErr,histCount:histRows.length,timeline,
+      rejRows,rejEmpty:!rejRows.length,rejSummary,
+      allRules:["La estación tiene 3 filas × 10 puestos y admite máximo 30 bicicletas.","Registro: código y color no vacíos, código único, fila 1–3, puesto 1–10 y puesto libre.","Préstamo: código estudiantil de 6 números, bicicleta existente y Disponible, un préstamo activo por estudiante.","Todo préstamo rechazado se registra con fecha, bicicleta, estudiante y motivo.","Devolución: solo bicicletas Prestadas con préstamo activo; se guarda la hora de regreso y la duración.","Mantenimiento: solo desde Disponible. Reactivar: solo desde En mantenimiento.","No se puede mover ni retirar una bicicleta prestada.","Retirar una bicicleta libera su puesto y conserva el historial.","El código estudiantil identifica el préstamo, pero no autentica al estudiante."],
+      integ:[{icon:"code",t:"Lógica en Python",d:"Las reglas del sistema se ejecutan como servicio y la interfaz consume sus respuestas."},{icon:"database",t:"Supabase",d:"Tablas bicicletas, prestamos y rechazos con el mismo esquema de este prototipo."},{icon:"cloud_upload",t:"Vercel",d:"Despliegue del frontend y funciones serverless para cada operación."}],
+      clearStation:()=>{if(s.online){window.alert("Esta opción solo funciona en el modo demo. No se borrarán datos reales.");return;}if(window.confirm("¿Vaciar la estación y borrar los movimientos ficticios?"))this.setState({data:{bicicletas:[],prestamos:[],rechazos:[],seq:1},sel:null,loanRes:null,retRes:null,toast:{ok:true,msg:"Estación de demostración vaciada."}},()=>this.flash());},
+      loadSample:()=>this.run(dd=>Ops.cargarEjemplo(dd),"Se cargaron las 30 bicicletas de demostración."),
+      resetDemo:()=>{if(s.online){window.alert("Los datos reales no se restablecen desde este botón. Desconecta la estación para usar la demo.");return;}if(window.confirm("¿Restablecer los datos ficticios de demostración?"))this.setState({data:seed(),sel:null,loanRes:null,retRes:null,toast:{ok:true,msg:"Demostración restablecida."}},()=>this.flash());},
+      toast:s.toast?{msg:s.toast.msg,bg:s.toast.ok?"#0E3B2A":"#9A3B28",fg:"#FFFFFF",icon:s.toast.ok?"check_circle":"error"}:false
+    };
+  }
+}
+</script>
+</body>
+</html>
