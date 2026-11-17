@@ -1,0 +1,410 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="theme-color" content="#0b1526">
+  <meta name="description" content="BiciSabana: gestión de préstamo de bicicletas del campus universitario.">
+  <title>BiciSabana · Gestión de bicicletas</title>
+  <style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap');
+:root{font-family:'DM Sans',system-ui,-apple-system,'Segoe UI',sans-serif;color:#18263b;background:#f4f6f9;font-size:14px;line-height:1.5;font-synthesis:none;--navy:#0b1628;--slate:#26364a;--muted:#718095;--border:#e8edf3;--green:#087b62;--blue:#416ac1;--orange:#b67822;--surface:#fff;--soft:#f5f8fb;--focus:#517ad7}*{box-sizing:border-box}html{scroll-behavior:smooth;scroll-padding-top:85px}body{margin:0;min-width:330px}button,input,select{font:inherit}button{cursor:pointer}button:focus-visible,input:focus-visible,select:focus-visible,a:focus-visible{outline:3px solid #86a6ff;outline-offset:3px}a{color:inherit;text-decoration:none}h1,h2,h3,p{margin-top:0}h1,h2,h3{font-family:Outfit,'DM Sans',sans-serif}h2{font-size:24px;font-weight:700;letter-spacing:-.04em;line-height:1.1;margin:7px 0 8px}p{color:var(--muted)}.app-shell{min-height:100vh;display:flex}.sidebar{width:244px;flex-shrink:0;background:var(--navy);color:#9fabc0;position:sticky;top:0;height:100vh;display:flex;flex-direction:column;padding:29px 17px 24px;z-index:30}.brand{display:flex;gap:13px;align-items:center;color:#fff;padding:0 10px 38px}.brand-mark{display:flex;align-items:center;justify-content:center;width:38px;height:38px;background:#c8fa73;color:#16311a;font-size:28px;font-weight:800;border-radius:11px}.brand strong{font-family:Outfit,sans-serif;font-size:22px;letter-spacing:-.055em;display:block;line-height:1.1}.brand strong span{color:#c8fa73}.brand small{display:block;color:#8394ad;letter-spacing:.2em;font-size:8px;font-weight:700;margin-top:5px;text-transform:uppercase}.sidebar-label{font-size:10px;font-weight:800;letter-spacing:.18em;margin:7px 16px 14px;color:#66788e}.nav{display:grid;gap:5px}.nav-link{display:flex;align-items:center;gap:14px;font-size:13px;font-weight:600;padding:13px 15px;border-radius:9px;transition:background .15s,color .15s}.nav-link:hover,.nav-link:focus-visible{color:#fff;background:#182b42}.nav-link.active{background:#1f3348;color:#fff;box-shadow:inset 3px 0 0 #c8fa73}.nav-icon{font-size:19px;font-weight:500;color:#9dadc1;line-height:1;width:22px;text-align:center}.nav-link.active .nav-icon{color:#c8fa73}.sidebar-bottom{margin-top:auto;padding:15px 10px 0}.side-badge{font-size:12px;color:#eef3f9;background:#192b3f;border:1px solid #2b3e52;border-radius:11px;padding:13px 12px 13px 35px;position:relative}.side-badge small{display:block;color:#8da0b7;font-size:10px;margin-top:3px}.pulse{position:absolute;left:14px;top:17px;width:10px;height:10px;border-radius:50%;background:#c8fa73;box-shadow:0 0 0 4px #c8fa732a}.side-foot{font-size:10px;color:#71839a;margin:20px 5px 0;line-height:1.9}.main-area{min-width:0;flex:1}.topbar{height:70px;background:white;border-bottom:1px solid var(--border);display:flex;align-items:center;padding:0 40px;justify-content:space-between;gap:15px;position:sticky;top:0;z-index:20}.breadcrumbs{font-size:12px;color:#8795a7;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}.breadcrumbs span{padding:0 10px;color:#c2ccd8}.breadcrumbs strong{color:#2a3d53;font-weight:700}.topbar-right{display:flex;align-items:center;gap:10px}.status-dot{width:7px;height:7px;background:#25a87c;border-radius:50%}.system-status{font-size:11px;color:#647386;font-weight:700;margin-right:16px}.avatar{display:grid;place-items:center;width:34px;height:34px;background:#ecf1e8;color:#4a6842;font-size:11px;border-radius:50%;font-weight:800}.menu-toggle.icon-button{display:none}.content{max-width:1540px;margin:auto;padding:30px 38px 25px}.hero{position:relative;display:flex;background:linear-gradient(110deg,#0f243c 0%,#123c51 100%);overflow:hidden;color:#fff;border-radius:18px;min-height:268px;padding:38px 43px}.hero-main{position:relative;z-index:1;max-width:61%}.eyebrow,.small-overline{font-size:10px;font-weight:800;letter-spacing:.17em;text-transform:uppercase}.eyebrow{display:flex;align-items:center;gap:15px;color:#d0f698}.eyebrow-line{height:1px;width:32px;background:#b4d185}.hero h1{font-size:clamp(32px,3.3vw,50px);line-height:1.05;max-width:600px;font-weight:700;letter-spacing:-.046em;margin:20px 0 13px}.hero h1 em{font-style:normal;color:#cef88c}.hero p{font-size:13px;color:#c4d2df;max-width:480px;margin:0 0 22px}.hero-actions{display:flex;gap:11px;flex-wrap:wrap}.btn{border:0;border-radius:8px;display:inline-flex;justify-content:center;align-items:center;gap:12px;padding:12px 19px;font-weight:800;font-size:12px;min-height:42px;transition:transform .12s,background .12s}.btn:hover{transform:translateY(-1px)}.btn-light{background:#cffa91;color:#10331f}.btn-light:hover{background:#dafaac}.btn-ghost-light{background:transparent;color:white;border:1px solid #7e95a87a}.btn-ghost-light:hover{background:#ffffff15}.btn-primary{background:#153c51;color:white}.btn-primary:hover{background:#1e5570}.btn-secondary{background:#eef3f7;color:#18334a}.btn-secondary:hover{background:#e0e9f1}.btn-danger{background:#fff0ed;color:#a84b3b}.btn-danger:hover{background:#ffded6}.hero-art{position:absolute;right:0;top:0;bottom:0;width:44%;overflow:hidden}.hero-bike{position:absolute;color:#a7e9d0;width:83%;height:80%;right:1%;top:4%;opacity:.9;filter:drop-shadow(0 20px 20px #042c3b5e)}.hero-round{position:absolute;aspect-ratio:1;border:1px solid #d0eac928;border-radius:50%}.round-one{width:410px;right:-80px;top:-90px}.round-two{width:310px;right:-25px;top:-40px}.hero-caption{position:absolute;right:24px;bottom:17px;color:#bbd2d9;font-size:9px;letter-spacing:.12em;line-height:1.7;font-weight:700}.hero-caption strong{font-family:Outfit;font-size:15px;letter-spacing:-.02em;color:white}.hero-caption-icon{font-size:20px;color:#d4f5a4;margin-right:6px}.metrics{display:grid;grid-template-columns:repeat(4,minmax(0,1fr));gap:15px;margin-top:18px}.metric{background:var(--surface);border:1px solid var(--border);border-radius:13px;padding:18px 20px 17px;min-width:0}.metric-title{font-size:12px;color:#5c6e83;font-weight:700;display:flex;align-items:center;justify-content:space-between;gap:3px}.metric-icon{display:grid;place-items:center;width:29px;height:29px;border-radius:7px;font-size:17px;flex-shrink:0}.metric-icon.ink{background:#ecf1f6;color:#263b58}.metric-icon.green{background:#e5f7ee;color:#11865f}.metric-icon.blue{background:#edf2fb;color:#547bd1}.metric-icon.orange{background:#fff1de;color:#bc842d}.metric-number{font-family:Outfit;font-size:35px;font-weight:700;letter-spacing:-.05em;line-height:1.25;margin:11px 0 3px}.metric-detail{display:flex;align-items:center;gap:8px;color:#8a97a6;font-size:11px}.metric-detail strong{font-weight:700;color:#677789}.mini-dot{display:inline-block;width:7px;height:7px;border-radius:50%}.green-bg{background:#24a77f}.blue-bg{background:#547bd1}.orange-bg{background:#d9a044}.section{scroll-margin-top:100px;margin-top:26px}.section-heading{display:flex;justify-content:space-between;align-items:end;gap:20px;margin-bottom:15px}.small-overline{color:#7990a3}.section-heading h2{margin-top:8px}.heading-light{font-size:18px;font-weight:500;color:#92a1b1}.section-heading p,.panel-heading p{font-size:12px;margin-bottom:0}.map-legend{display:flex;gap:14px;flex-wrap:wrap;justify-content:flex-end;margin-bottom:7px}.map-legend span{font-size:11px;color:#6e7e91;display:flex;align-items:center;gap:6px;white-space:nowrap}.legend-dot{display:inline-block;width:8px;height:8px;border-radius:50%}.legend-dot.free{background:#079b70}.legend-dot.busy{background:#507ad4}.legend-dot.repair{background:#e8a548}.legend-dot.empty{background:#c7d2dc}.map-wrapper{background:white;border:1px solid var(--border);border-radius:12px;padding:22px 21px 0}.station-map{display:grid;gap:13px;min-width:750px}.map-row{display:grid;grid-template-columns:64px repeat(10,minmax(0,1fr));gap:8px;align-items:center}.row-label{font-size:11px;font-weight:800;white-space:nowrap;color:#62758b}.bike-cell{border:1px solid #dae8e3;background:#eaf7f0;color:#117d60;border-radius:8px;min-height:68px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:3px;transition:transform .15s,box-shadow .15s;border-collapse:separate}.bike-cell:hover:not(.empty){transform:translateY(-2px);box-shadow:0 4px 13px #153c5130}.bike-cell.busy{color:#416bc3;background:#edf2fd;border-color:#dce5f9}.bike-cell.repair{color:#b17625;background:#fff5e5;border-color:#f7e7c7}.bike-cell.empty{color:#a5b2bf;background:#f5f7fa;border:1px dashed #ced8e3;cursor:default}.bike-glyph{width:22px;height:18px;display:block}.bike-code{font-family:Outfit,sans-serif;font-size:12px;font-weight:800}.bike-spot{font-size:9px;opacity:.82}.map-footer{display:flex;align-items:center;justify-content:space-between;gap:10px;border-top:1px solid var(--border);margin-top:21px;padding:13px 0;font-size:11px;color:#8695a4}.map-footer-icon{font-size:15px;margin-right:5px}.map-footer>div:last-child{font-weight:800;color:#62758a}.two-column{display:grid;grid-template-columns:1.05fr .95fr;gap:16px}.panel{border:1px solid var(--border);border-radius:12px;background:white;padding:21px 23px}.panel-heading{display:flex;justify-content:space-between;align-items:center;gap:10px;margin-bottom:17px}.panel-heading h2{margin-bottom:0}.chip{border-radius:50px;padding:6px 10px;background:#f2f5f8;color:#698096;font-weight:800;font-size:10px;white-space:nowrap}.chip-solid{background:#eaf1e9;color:#54805e}.tabs{display:flex;flex-wrap:wrap;gap:5px;background:#f3f6f9;padding:5px;border-radius:9px;margin-bottom:20px}.tab{flex:1;min-width:68px;background:transparent;border:none;border-radius:6px;font-size:12px;color:#657991;font-weight:800;padding:10px 6px}.tab.active{color:#153c51;background:#fff;box-shadow:0 2px 8px #1c385d12}.form-grid{display:grid;gap:13px}.field{display:grid;gap:6px;min-width:0}.field label{font-size:11px;font-weight:800;color:#40586c}.field input,.field select,.search-input input,.inventory-controls select{background:#fff;border:1px solid #dfe7ee;border-radius:8px;height:40px;padding:0 12px;width:100%;color:#22384b;outline:none}.field input::placeholder,.search-input input::placeholder{color:#acb7c3}.field small{font-size:10px;color:#8d9cac}.field-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}.btn.full{width:100%;margin-top:2px}.form-note{padding:10px 12px;background:#f4f7fa;border-radius:7px;font-size:11px;color:#6d7e92}.active-panel{display:flex;flex-direction:column}.active-loans{flex:1;min-height:236px;display:grid;align-content:start;gap:10px}.empty-state{text-align:center;padding:30px 18px;color:#92a0ae}.empty-icon{width:55px;height:55px;border-radius:50%;background:#eef4f0;color:#74a18a;font-size:29px;display:grid;place-items:center;margin:0 auto 11px}.empty-state strong{font-size:13px;color:#455b6e;display:block;margin-bottom:5px}.empty-state p{font-size:11px;max-width:275px;margin:0 auto}.loan-row{padding:11px 12px;border:1px solid var(--border);border-radius:9px;display:flex;align-items:center;gap:9px}.loan-icon{width:35px;height:35px;border-radius:8px;background:#e9effc;color:#3867ba;display:grid;place-items:center;font-size:19px}.loan-info{flex:1;min-width:0}.loan-info strong{font-size:12px}.loan-info small{display:block;font-size:10px;color:#8795a4}.loan-actions{display:flex;align-items:center;gap:9px}.loan-actions button{font-size:11px;padding:7px 9px;border:0;background:#eff4f6;border-radius:6px;color:#284964;font-weight:800}.loan-actions button:hover{background:#dfebf1}.panel-footer{border-top:1px solid var(--border);padding-top:13px;display:flex;justify-content:space-between;gap:7px;color:#9aa6b4;font-size:10px;margin-top:18px;align-items:center}.text-link{font-size:11px;font-weight:800;color:#1d6373;background:none;border:0;padding:0}.text-link:hover{text-decoration:underline}.inventory-heading{align-items:end}.inventory-controls{display:flex;gap:8px;align-items:center;flex-wrap:wrap}.search-input{display:flex;align-items:center;gap:7px;border:1px solid #dfe7ee;border-radius:8px;background:white;padding-left:12px;color:#8699ab}.search-input input{border:0;height:37px;width:178px;outline:0;padding-left:0}.inventory-controls select{font-size:11px;font-weight:700;width:auto;min-width:139px;color:#455d73}.table-scroll{overflow-x:auto}table{width:100%;border-collapse:collapse;text-align:left;white-space:nowrap}th{padding:11px 12px;font-size:9px;letter-spacing:.1em;color:#8b9bad;background:#f6f8fa;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}td{padding:12px 12px;border-bottom:1px solid #edf1f5;font-size:11px;color:#66798c}tbody tr:hover{background:#fbfcfe}td strong{color:#223a53;font-size:12px;font-weight:800}.color-disc{display:inline-block;width:9px;height:9px;border-radius:50%;margin-right:9px;vertical-align:middle;border:1px solid #ccc}.status-pill{font-size:10px;font-weight:800;display:inline-flex;align-items:center;gap:6px;border-radius:30px;padding:5px 9px;background:#ecf8f2;color:#14845f}.status-pill::before{content:"";height:6px;width:6px;background:currentColor;border-radius:50%}.status-pill.prestada{background:#edf2fb;color:#4772bd}.status-pill.mantenimiento{background:#fff3e4;color:#bb812c}.table-action{border:0;background:transparent;color:#2c6e80;font-size:11px;font-weight:800}.table-action:hover{text-decoration:underline}.table-footer{font-size:10px;color:#8b99a9;text-align:right;padding-top:14px}.history-tabs{display:flex;gap:22px;border-bottom:1px solid var(--border);margin-top:14px}.history-tab{border:0;background:transparent;color:#8896a6;padding:11px 2px;font-size:11px;font-weight:800;border-bottom:2px solid transparent}.history-tab.active{color:#174d60;border-bottom-color:#1a7280}.history-tab span{display:inline-block;background:#f1f3f6;padding:1px 6px;border-radius:5px;margin-left:4px}.history-controls{display:flex;align-items:center;justify-content:space-between;margin:16px 0 11px}.history-controls .search-input{max-width:265px}.table-count{font-size:10px;color:#95a1b0}.footer{padding:26px 0 10px;display:flex;justify-content:space-between;gap:10px;color:#8e9ba9;font-size:10px}.footer .text-link{font-size:10px}.toast-stack{position:fixed;z-index:100;bottom:20px;right:20px;display:grid;gap:8px;width:min(365px,calc(100vw - 40px))}.toast{background:#143e4d;color:#fff;border-radius:10px;box-shadow:0 11px 38px #122f4440;padding:15px 17px;font-size:12px;font-weight:600;border-left:5px solid #a4efba}.toast.error{background:#642e37;border-left-color:#f5a0a3}.modal-overlay{position:fixed;inset:0;background:#0416289c;z-index:99;display:grid;place-items:center;padding:20px}.modal-overlay[hidden],.tab-panel[hidden],#mover-campos[hidden]{display:none!important}.modal{background:white;border-radius:16px;width:min(420px,100%);box-shadow:0 18px 65px #081a3250;padding:26px;position:relative}.modal h2{font-size:30px}.modal-close{position:absolute;right:16px;top:15px}.icon-button{border:0;background:transparent;color:#668095;font-size:23px;width:32px;height:32px;border-radius:6px;display:grid;place-items:center}.icon-button:hover{background:#edf3f7}.detail-body{margin:23px 0;border-top:1px solid var(--border);border-bottom:1px solid var(--border)}.detail-item{display:flex;align-items:center;justify-content:space-between;gap:8px;padding:12px 0;border-bottom:1px solid #eef2f5;font-size:12px}.detail-item:last-child{border-bottom:0}.detail-item span{color:#8b98a7}.detail-item strong{color:#253d52}.detail-actions{display:flex;gap:9px;flex-wrap:wrap}.detail-actions>.btn{flex:1}.visually-hidden{clip:rect(0,0,0,0);clip-path:inset(50%);height:1px;overflow:hidden;position:absolute;white-space:nowrap;width:1px}.table-empty{text-align:center!important;padding:30px;color:#90a0ad}.side-badge,.hero,.metric,.panel,.map-wrapper{box-shadow:0 3px 14px #112c4505}@media (min-width:1500px){.content{padding-left:45px;padding-right:45px}.hero{min-height:290px}}@media (max-width:1180px){.sidebar{width:205px}.content{padding:25px}.topbar{padding:0 25px}.two-column{grid-template-columns:1fr 1fr}.hero-main{max-width:64%}.hero-art{width:39%}.map-wrapper{overflow-x:auto}.metrics{gap:9px}.metric{padding:15px}}@media (max-width:950px){.sidebar{width:72px;padding:25px 10px}.brand{padding:0 4px 33px}.brand>span:last-child,.sidebar-label,.nav-link:not(.active) .nav-label,.sidebar-bottom,.nav-link{font-size:0}.nav-link{justify-content:center;gap:0;padding:13px}.nav-icon{font-size:22px}.brand-mark{width:40px;flex-shrink:0}.two-column{grid-template-columns:1fr}.hero-main{max-width:72%}.hero-art{opacity:.6}.metrics{grid-template-columns:repeat(2,1fr)}.section-heading{align-items:start;flex-direction:column}.map-legend{justify-content:flex-start}}@media (max-width:660px){.sidebar{position:fixed;width:245px;height:100dvh;transform:translateX(-105%);transition:transform .2s;padding:25px 17px}.sidebar.open{transform:translateX(0);box-shadow:25px 0 50px #0d213350}.sidebar .brand>span:last-child{display:block}.sidebar .nav-link{font-size:13px;justify-content:flex-start;gap:13px}.sidebar .nav-link .nav-icon{font-size:19px}.sidebar .sidebar-label,.sidebar .sidebar-bottom{display:block}.menu-toggle.icon-button{display:grid}.topbar{height:60px;padding:0 18px}.system-status{display:none}.topbar-right{margin-left:auto}.content{padding:17px 13px}.hero{padding:31px 25px 27px;min-height:300px}.hero-main{max-width:100%}.hero h1{font-size:35px}.hero-art{opacity:.13;width:80%}.hero-caption{display:none}.metrics{gap:9px;margin-top:11px}.metric{padding:13px}.metric-number{font-size:31px}.metric-title{font-size:11px}.section{margin-top:22px}.map-wrapper{padding:15px 12px 0}.station-map{min-width:770px}.map-footer{min-width:720px}.panel{padding:18px 15px}.inventory-heading{align-items:stretch;flex-direction:column}.inventory-controls{align-items:stretch}.search-input,.search-input input{flex:1}.footer{flex-direction:column}.section-heading h2{font-size:23px}.hero-actions{gap:7px}.btn{padding:11px 13px}}
+
+</style>
+</head>
+<body>
+  <div class="app-shell">
+    <aside class="sidebar" id="sidebar">
+      <a class="brand" href="#inicio" aria-label="Inicio BiciSabana">
+        <span class="brand-mark" aria-hidden="true">✳</span>
+        <span><strong>Bici<span>Sabana</span></strong><small>Campus Mobility</small></span>
+      </a>
+      <div class="sidebar-label">GESTIÓN</div>
+      <nav class="nav" aria-label="Navegación principal">
+        <a class="nav-link active" href="#inicio" data-link="inicio"><span class="nav-icon">▦</span> Panel general</a>
+        <a class="nav-link" href="#estacion" data-link="estacion"><span class="nav-icon">▧</span> Estación 3 × 10</a>
+        <a class="nav-link" href="#operaciones" data-link="operaciones"><span class="nav-icon">⇄</span> Operaciones</a>
+        <a class="nav-link" href="#inventario" data-link="inventario"><span class="nav-icon">▤</span> Inventario</a>
+        <a class="nav-link" href="#historial" data-link="historial"><span class="nav-icon">◷</span> Historial y control</a>
+      </nav>
+      <div class="sidebar-bottom">
+        <div class="side-badge"><span class="pulse"></span> Prototipo académico <small>Datos de demostración locales</small></div>
+        <div class="side-foot">Fundamentos de Programación<br>Universidad de La Sabana</div>
+      </div>
+    </aside>
+    <div class="main-area">
+      <header class="topbar">
+        <button type="button" class="menu-toggle icon-button" id="toggle-menu" aria-label="Abrir menú">☰</button>
+        <div class="breadcrumbs">Sistema de préstamos <span>/</span> <strong id="section-name">Panel general</strong></div>
+        <div class="topbar-right"><span class="status-dot"></span><span class="system-status">Sistema operativo</span><span class="avatar" aria-label="Perfil monitor">MO</span></div>
+      </header>
+      <main class="content">
+        <section class="hero" id="inicio" aria-labelledby="hero-title">
+          <div class="hero-main">
+            <div class="eyebrow">BIENESTAR UNIVERSITARIO <span class="eyebrow-line"></span> BICISABANA</div>
+            <h1 id="hero-title">Movilidad que <em>conecta</em> el campus.</h1>
+            <p>Controla los préstamos, las devoluciones y la disponibilidad de tu estación desde un solo lugar.</p>
+            <div class="hero-actions">
+              <button class="btn btn-light" type="button" data-go="operaciones" data-tab-go="prestar">+ Nuevo préstamo <span aria-hidden="true">↗</span></button>
+              <button class="btn btn-ghost-light" type="button" data-go="estacion">Ver mapa de estación <span aria-hidden="true">→</span></button>
+            </div>
+          </div>
+          <div class="hero-art" aria-hidden="true">
+            <div class="hero-round round-one"></div><div class="hero-round round-two"></div>
+            <svg class="hero-bike" viewBox="0 0 500 280" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <circle cx="104" cy="198" r="64" stroke="currentColor" stroke-width="11"/><circle cx="389" cy="198" r="64" stroke="currentColor" stroke-width="11"/>
+              <path d="M104 198L185 91L258 198H104L185 91L232 89L389 198L313 63" stroke="currentColor" stroke-width="10" stroke-linecap="round" stroke-linejoin="round"/>
+              <path d="M296 64H331M164 89H209M177 78L185 91" stroke="currentColor" stroke-width="12" stroke-linecap="round"/>
+              <circle cx="258" cy="198" r="12" fill="currentColor"/>
+              <path d="M218 52C254 23 291 15 337 34" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-dasharray="6 10" opacity=".55"/>
+            </svg>
+            <div class="hero-caption"><span class="hero-caption-icon">↗</span> MÁS QUE BICICLETAS<br><strong>Un campus en movimiento.</strong></div>
+          </div>
+        </section>
+        <section aria-label="Resumen general" class="metrics" id="resumen">
+          <article class="metric"><div class="metric-title">Bicicletas registradas <span class="metric-icon ink">▣</span></div><div class="metric-number" id="stat-total">30</div><div class="metric-detail">Capacidad de <strong>30 puestos</strong></div></article>
+          <article class="metric"><div class="metric-title">Disponibles <span class="metric-icon green">✓</span></div><div class="metric-number" id="stat-disponibles">30</div><div class="metric-detail"><span class="mini-dot green-bg"></span> Listas para prestar</div></article>
+          <article class="metric"><div class="metric-title">En préstamo <span class="metric-icon blue">↗</span></div><div class="metric-number" id="stat-prestadas">0</div><div class="metric-detail"><span class="mini-dot blue-bg"></span> En circulación</div></article>
+          <article class="metric"><div class="metric-title">Mantenimiento <span class="metric-icon orange">⚒</span></div><div class="metric-number" id="stat-mantenimiento">0</div><div class="metric-detail"><span class="mini-dot orange-bg"></span> Fuera de servicio</div></article>
+        </section>
+        <section id="estacion" class="section section-map" aria-labelledby="map-title">
+          <div class="section-heading"><div><span class="small-overline">VISTA EN TIEMPO REAL</span><h2 id="map-title">Mapa de la estación <span class="heading-light">/ 3 × 10</span></h2><p>Selecciona una bicicleta para conocer su estado o iniciar una operación.</p></div><div class="map-legend"><span><i class="legend-dot free"></i> Disponible</span><span><i class="legend-dot busy"></i> Prestada</span><span><i class="legend-dot repair"></i> Mantenimiento</span><span><i class="legend-dot empty"></i> Vacío</span></div></div>
+          <div class="map-wrapper"><div id="station-map" class="station-map" role="group" aria-label="Mapa interactivo de tres filas por diez puestos"></div><div class="map-footer"><div><span class="map-footer-icon">ⓘ</span> Los puestos prestados permanecen señalados hasta su devolución.</div><div id="map-count">30 / 30 puestos ocupados</div></div></div>
+        </section>
+        <div class="two-column">
+          <section id="operaciones" class="section panel" aria-labelledby="operations-title">
+            <div class="panel-heading"><div><span class="small-overline">ACCIONES RÁPIDAS</span><h2 id="operations-title">Centro de operaciones</h2></div><span class="chip chip-solid">Monitor</span></div>
+            <div class="tabs" role="tablist" aria-label="Tipos de operación">
+              <button type="button" role="tab" aria-selected="true" class="tab active" data-tab="prestar">Prestar</button>
+              <button type="button" role="tab" aria-selected="false" class="tab" data-tab="devolver">Devolver</button>
+              <button type="button" role="tab" aria-selected="false" class="tab" data-tab="registrar">Registrar</button>
+              <button type="button" role="tab" aria-selected="false" class="tab" data-tab="gestionar">Gestionar</button>
+            </div>
+            <div class="tab-panel" data-panel="prestar">
+              <form id="form-prestar" class="form-grid" novalidate>
+                <div class="field"><label for="prestar-bici">Código de bicicleta</label><input id="prestar-bici" name="bicicleta" placeholder="Ej. B01" autocomplete="off" maxlength="12" required><small>Selecciona una bicicleta disponible.</small></div>
+                <div class="field"><label for="prestar-estudiante">Código estudiantil</label><input id="prestar-estudiante" name="estudiante" placeholder="Ej. 123456" autocomplete="off" inputmode="numeric" pattern="[0-9]{6}" maxlength="6" required><small>Exactamente 6 dígitos numéricos.</small></div>
+                <button class="btn btn-primary full" type="submit">Confirmar préstamo <span aria-hidden="true">→</span></button>
+              </form>
+            </div>
+            <div class="tab-panel" data-panel="devolver" hidden>
+              <form id="form-devolver" class="form-grid"><div class="field"><label for="devolver-bici">Código de bicicleta prestada</label><input id="devolver-bici" name="bicicleta" placeholder="Ej. B01" autocomplete="off" maxlength="12" required><small>Al devolverla, volverá a estar disponible.</small></div><button type="submit" class="btn btn-primary full">Confirmar devolución <span aria-hidden="true">→</span></button></form>
+            </div>
+            <div class="tab-panel" data-panel="registrar" hidden>
+              <form id="form-registrar" class="form-grid"><div class="field"><label for="registrar-bici">Código de la nueva bicicleta</label><input id="registrar-bici" name="bicicleta" placeholder="Ej. B31" maxlength="12" autocomplete="off" required></div><div class="field"><label for="registrar-color">Color</label><input id="registrar-color" name="color" placeholder="Ej. Verde" required></div><div class="field-row"><div class="field"><label for="registrar-fila">Fila</label><select id="registrar-fila" required><option value="1">Fila 1</option><option value="2">Fila 2</option><option value="3">Fila 3</option></select></div><div class="field"><label for="registrar-puesto">Puesto</label><select id="registrar-puesto" required></select></div></div><div class="form-note">La estación admite 30 bicicletas. Para registrar una más, debe existir un puesto libre.</div><button class="btn btn-primary full" type="submit">Registrar bicicleta <span aria-hidden="true">→</span></button></form>
+            </div>
+            <div class="tab-panel" data-panel="gestionar" hidden>
+              <form id="form-gestionar" class="form-grid"><div class="field"><label for="gestionar-accion">Operación</label><select id="gestionar-accion"><option value="mantenimiento">Enviar a mantenimiento</option><option value="reactivar">Reactivar bicicleta</option><option value="mover">Cambiar puesto</option><option value="retirar">Retirar del inventario</option></select></div><div class="field"><label for="gestionar-bici">Código de bicicleta</label><input id="gestionar-bici" placeholder="Ej. B03" maxlength="12" autocomplete="off" required></div><div class="field-row" id="mover-campos" hidden><div class="field"><label for="mover-fila">Nueva fila</label><select id="mover-fila"><option value="1">Fila 1</option><option value="2">Fila 2</option><option value="3">Fila 3</option></select></div><div class="field"><label for="mover-puesto">Nuevo puesto</label><select id="mover-puesto"></select></div></div><button class="btn btn-primary full" type="submit">Aplicar cambio <span aria-hidden="true">→</span></button></form>
+            </div>
+          </section>
+          <section class="section panel active-panel" aria-labelledby="active-title"><div class="panel-heading"><div><span class="small-overline">SEGUIMIENTO</span><h2 id="active-title">Préstamos activos</h2></div><span class="chip" id="active-badge">0 en curso</span></div><div id="active-loans" class="active-loans"></div><div class="panel-footer"><span>Actualiza automáticamente al prestar o devolver.</span><button type="button" class="text-link" data-go="historial">Ver historial ↗</button></div></section>
+        </div>
+        <section id="inventario" class="section panel inventory-panel" aria-labelledby="inventory-title"><div class="panel-heading inventory-heading"><div><span class="small-overline">INVENTARIO GENERAL</span><h2 id="inventory-title">Bicicletas de la estación</h2><p>Consulta rápidamente el código, el estado y la ubicación.</p></div><div class="inventory-controls"><label class="search-input"><span aria-hidden="true">⌕</span><input id="filter-text" placeholder="Buscar por código o color" aria-label="Buscar bicicleta"></label><select id="filter-state" aria-label="Filtrar por estado"><option value="Todos">Todos los estados</option><option value="Disponible">Disponibles</option><option value="Prestada">Prestadas</option><option value="En mantenimiento">Mantenimiento</option></select></div></div><div class="table-scroll"><table><thead><tr><th>BICICLETA</th><th>UBICACIÓN</th><th>ESTADO</th><th>ESTUDIANTE</th><th>ACCIÓN</th></tr></thead><tbody id="inventory-body"></tbody></table></div><div class="table-footer" id="inventory-count">0 resultados</div></section>
+        <section id="historial" class="section panel history-panel" aria-labelledby="history-title"><div class="panel-heading"><div><span class="small-overline">TRAZABILIDAD Y SEGURIDAD</span><h2 id="history-title">Historial de movimientos</h2><p>Préstamos realizados, devoluciones e intentos rechazados.</p></div><span class="chip">DevSecOps</span></div><div class="history-tabs" role="tablist" aria-label="Historial"><button type="button" class="history-tab active" data-history="movimientos" aria-selected="true">Préstamos y devoluciones</button><button type="button" class="history-tab" data-history="rechazos" aria-selected="false">Intentos rechazados <span id="rejected-badge">0</span></button></div><div class="history-controls"><label class="search-input"><span aria-hidden="true">⌕</span><input id="history-filter" placeholder="Filtrar por bicicleta" aria-label="Filtrar historial por bicicleta"></label><span id="history-total" class="table-count"></span></div><div class="table-scroll" id="history-table-wrap"><table><thead id="history-head"></thead><tbody id="history-body"></tbody></table></div></section>
+        <footer class="footer"><span>© BiciSabana · Proyecto académico de Programación Orientada a Objetos</span><div><button class="text-link" type="button" id="reset-demo">Restaurar demostración</button><span> · </span><button class="text-link" type="button" id="clear-demo">Vaciar estación</button></div></footer>
+      </main>
+    </div>
+  </div>
+  <div class="toast-stack" id="toasts" aria-live="polite" aria-atomic="true"></div>
+  <div class="modal-overlay" id="detail-overlay" hidden><div class="modal" role="dialog" aria-modal="true" aria-labelledby="detail-title"><button class="icon-button modal-close" id="detail-close" type="button" aria-label="Cerrar">×</button><span class="small-overline">INFORMACIÓN DE BICICLETA</span><h2 id="detail-title">B01</h2><div id="detail-body" class="detail-body"></div><div class="detail-actions" id="detail-actions"></div></div></div>
+  <script>
+/* BiciSabana · lógica independiente de interfaz, sin dependencias externas.
+   Esta versión web reproduce las reglas del proyecto Python, pero NO está conectada a Python.
+   Los datos de demostración residen en el almacenamiento local del navegador. */
+(function (root) {
+  "use strict";
+  const ESTADOS = Object.freeze({DISPONIBLE: "Disponible", PRESTADA: "Prestada", MANTENIMIENTO: "En mantenimiento"});
+  const COLOR_BICICLETAS = ["Azul", "Rojo", "Verde", "Amarillo", "Negro", "Blanco"];
+  const CLAVE = "bicisabana_v1_demo";
+  const copiar = (valor) => JSON.parse(JSON.stringify(valor));
+  const ahora = () => new Date().toISOString();
+  const codigoBici = (codigo) => String(codigo ?? "").trim().toUpperCase();
+  const esEntero = (n) => Number.isInteger(n) && Number.isFinite(n);
+  const validarPosicion = (fila, puesto) => esEntero(fila) && fila >= 1 && fila <= 3 && esEntero(puesto) && puesto >= 1 && puesto <= 10;
+  const validarEstudiante = (codigo) => typeof codigo === "string" && /^[0-9]{6}$/.test(codigo);
+
+  function estadoInicial(cantidad = 30) {
+    const bicicletas = [];
+    for (let i = 0; i < Math.min(30, Math.max(0, cantidad)); i++) {
+      bicicletas.push({codigo: `B${String(i + 1).padStart(2, "0")}`, color: COLOR_BICICLETAS[i % COLOR_BICICLETAS.length], estado: ESTADOS.DISPONIBLE, fila: Math.floor(i / 10) + 1, puesto: (i % 10) + 1});
+    }
+    return {version: 1, bicicletas, prestamos: [], rechazos: [], actualizacion: ahora()};
+  }
+
+  class SistemaBiciSabanaWeb {
+    constructor(datos = estadoInicial()) {
+      this.datos = copiar(datos);
+      this._validarIntegridad();
+    }
+    _validarIntegridad() {
+      const d = this.datos;
+      if (!d || !Array.isArray(d.bicicletas) || !Array.isArray(d.prestamos) || !Array.isArray(d.rechazos)) throw new Error("La información guardada está incompleta.");
+      const codigos = new Set(); const lugares = new Set();
+      for (const b of d.bicicletas) {
+        if (!b || !b.codigo || codigos.has(b.codigo) || !validarPosicion(b.fila, b.puesto)) throw new Error("Inventario inválido o duplicado.");
+        const lugar = `${b.fila}-${b.puesto}`;
+        if (lugares.has(lugar) || !Object.values(ESTADOS).includes(b.estado)) throw new Error("El mapa contiene estados o puestos incompatibles.");
+        codigos.add(b.codigo); lugares.add(lugar);
+      }
+      if (d.bicicletas.length > 30) throw new Error("La estación admite hasta 30 bicicletas.");
+      const activasBici = new Set(), activasEstudiante = new Set();
+      for (const p of d.prestamos) if (p.activo) {
+        const b = d.bicicletas.find(x => x.codigo === p.bicicleta);
+        if (!b || b.estado !== ESTADOS.PRESTADA || activasBici.has(p.bicicleta) || activasEstudiante.has(p.estudiante)) throw new Error("Hay préstamos activos inconsistentes.");
+        activasBici.add(p.bicicleta); activasEstudiante.add(p.estudiante);
+      }
+      for (const b of d.bicicletas) if (b.estado === ESTADOS.PRESTADA && !activasBici.has(b.codigo)) throw new Error("Hay bicicletas prestadas sin préstamo activo.");
+    }
+    snapshot() { return copiar(this.datos); }
+    _guardar() { this.datos.actualizacion = ahora(); }
+    bicicleta(codigo) { return this.datos.bicicletas.find(b => b.codigo === codigoBici(codigo)) || null; }
+    disponibles() { return this.datos.bicicletas.filter(b => b.estado === ESTADOS.DISPONIBLE).map(copiar); }
+    conteos() {
+      const result = {total: this.datos.bicicletas.length, disponibles: 0, prestadas: 0, mantenimiento: 0, vacios: 30 - this.datos.bicicletas.length};
+      for (const b of this.datos.bicicletas) {
+        if (b.estado === ESTADOS.DISPONIBLE) result.disponibles++;
+        else if (b.estado === ESTADOS.PRESTADA) result.prestadas++;
+        else result.mantenimiento++;
+      }
+      return result;
+    }
+    mapa() {
+      return Array.from({length: 3}, (_, i) => Array.from({length: 10}, (_, j) => this.datos.bicicletas.find(b => b.fila === i + 1 && b.puesto === j + 1) || null));
+    }
+    prestamosActivos() { return copiar(this.datos.prestamos.filter(p => p.activo).sort((a,b) => b.inicio.localeCompare(a.inicio))); }
+    historial(codigo = "") {
+      const filtro = codigoBici(codigo);
+      return copiar(this.datos.prestamos.filter(p => !filtro || p.bicicleta === filtro).sort((a,b) => b.inicio.localeCompare(a.inicio)));
+    }
+    rechazos() { return copiar(this.datos.rechazos.slice().reverse()); }
+    _rechazar(accion, bicicleta, estudiante, motivo) {
+      this.datos.rechazos.push({id: `R${Date.now()}-${this.datos.rechazos.length}`, fecha: ahora(), accion, bicicleta: codigoBici(bicicleta), estudiante: estudiante ? "••" + String(estudiante).slice(-2) : "", motivo});
+      this._guardar();
+      throw new Error(motivo);
+    }
+    registrarBicicleta({codigo, color, fila, puesto}) {
+      codigo = codigoBici(codigo); color = String(color ?? "").trim(); fila = Number(fila); puesto = Number(puesto);
+      if (!/^[A-Z0-9-]{2,12}$/.test(codigo)) throw new Error("El código debe tener entre 2 y 12 caracteres (letras, números o guion).");
+      if (!color) throw new Error("Indica el color de la bicicleta.");
+      if (this.bicicleta(codigo)) throw new Error("Ya existe una bicicleta con ese código.");
+      if (!validarPosicion(fila, puesto)) throw new Error("El puesto debe estar entre las filas 1–3 y las posiciones 1–10.");
+      if (this.datos.bicicletas.length >= 30) throw new Error("La estación ya tiene 30 bicicletas. Retira una para liberar un puesto.");
+      if (this.datos.bicicletas.some(b => b.fila === fila && b.puesto === puesto)) throw new Error("Ese puesto ya está ocupado.");
+      const b = {codigo, color, fila, puesto, estado: ESTADOS.DISPONIBLE};
+      this.datos.bicicletas.push(b); this._guardar(); return copiar(b);
+    }
+    retirarBicicleta(codigo) {
+      const b = this.bicicleta(codigo);
+      if (!b) throw new Error("No existe esa bicicleta.");
+      if (b.estado === ESTADOS.PRESTADA) throw new Error("Primero debes recibir la bicicleta prestada.");
+      this.datos.bicicletas = this.datos.bicicletas.filter(x => x.codigo !== b.codigo);
+      this._guardar(); return copiar(b);
+    }
+    prestar(codigo, estudiante) {
+      codigo = codigoBici(codigo); estudiante = String(estudiante ?? "").trim();
+      if (!validarEstudiante(estudiante)) this._rechazar("Préstamo", codigo, estudiante, "El código estudiantil debe tener exactamente seis dígitos numéricos.");
+      const b = this.bicicleta(codigo);
+      if (!b) this._rechazar("Préstamo", codigo, estudiante, "La bicicleta no existe.");
+      if (b.estado !== ESTADOS.DISPONIBLE) this._rechazar("Préstamo", codigo, estudiante, b.estado === ESTADOS.MANTENIMIENTO ? "La bicicleta está en mantenimiento." : "La bicicleta ya está prestada.");
+      if (this.datos.prestamos.some(p => p.activo && p.estudiante === estudiante)) this._rechazar("Préstamo", codigo, estudiante, "Este estudiante ya tiene una bicicleta prestada.");
+      const p = {id: `P${Date.now()}-${this.datos.prestamos.length}`, bicicleta: b.codigo, estudiante, inicio: ahora(), fin: null, activo: true, duracionMinutos: null};
+      b.estado = ESTADOS.PRESTADA;
+      this.datos.prestamos.push(p); this._guardar(); return copiar(p);
+    }
+    devolver(codigo) {
+      codigo = codigoBici(codigo);
+      const b = this.bicicleta(codigo);
+      if (!b) this._rechazar("Devolución", codigo, "", "La bicicleta no existe.");
+      if (b.estado !== ESTADOS.PRESTADA) this._rechazar("Devolución", codigo, "", "La bicicleta no está prestada.");
+      const p = this.datos.prestamos.find(x => x.activo && x.bicicleta === codigo);
+      if (!p) this._rechazar("Devolución", codigo, "", "No se encontró un préstamo activo para esta bicicleta.");
+      p.fin = ahora(); p.activo = false; p.duracionMinutos = Math.max(0, Math.round((new Date(p.fin) - new Date(p.inicio)) / 60000));
+      b.estado = ESTADOS.DISPONIBLE;
+      this._guardar(); return copiar(p);
+    }
+    mantenimiento(codigo) {
+      const b = this.bicicleta(codigo);
+      if (!b) throw new Error("La bicicleta no existe.");
+      if (b.estado !== ESTADOS.DISPONIBLE) throw new Error("Solo puedes enviar a mantenimiento una bicicleta disponible.");
+      b.estado = ESTADOS.MANTENIMIENTO; this._guardar(); return copiar(b);
+    }
+    reactivar(codigo) {
+      const b = this.bicicleta(codigo);
+      if (!b) throw new Error("La bicicleta no existe.");
+      if (b.estado !== ESTADOS.MANTENIMIENTO) throw new Error("La bicicleta no está en mantenimiento.");
+      b.estado = ESTADOS.DISPONIBLE; this._guardar(); return copiar(b);
+    }
+    mover(codigo, fila, puesto) {
+      const b = this.bicicleta(codigo); fila = Number(fila); puesto = Number(puesto);
+      if (!b) throw new Error("La bicicleta no existe.");
+      if (b.estado === ESTADOS.PRESTADA) throw new Error("No se puede cambiar de puesto una bicicleta prestada.");
+      if (!validarPosicion(fila, puesto)) throw new Error("El puesto debe estar entre las filas 1–3 y las posiciones 1–10.");
+      if (this.datos.bicicletas.some(x => x.codigo !== b.codigo && x.fila === fila && x.puesto === puesto)) throw new Error("Ese puesto ya está ocupado.");
+      b.fila = fila; b.puesto = puesto; this._guardar(); return copiar(b);
+    }
+    static restaurarDesdeNavegador(almacenamiento) {
+      if (!almacenamiento) return new SistemaBiciSabanaWeb();
+      try { const datos = almacenamiento.getItem(CLAVE); return datos ? new SistemaBiciSabanaWeb(JSON.parse(datos)) : new SistemaBiciSabanaWeb(); }
+      catch (_e) { return new SistemaBiciSabanaWeb(); }
+    }
+    guardarEnNavegador(almacenamiento) { if (almacenamiento) almacenamiento.setItem(CLAVE, JSON.stringify(this.datos)); }
+    static borrarDatosNavegador(almacenamiento) { if (almacenamiento) almacenamiento.removeItem(CLAVE); }
+  }
+  const API = {SistemaBiciSabanaWeb, ESTADOS, estadoInicial, validarEstudiante, CLAVE};
+  if (typeof module !== "undefined" && module.exports) module.exports = API;
+  root.BiciSabana = API;
+})(typeof window !== "undefined" ? window : globalThis);
+
+</script>
+  <script>
+/* Capa de presentación: los botones usan SistemaBiciSabanaWeb de logica.js.
+   El modelo se prueba por separado en tests/test_interfaz.js. */
+(() => {
+  "use strict";
+  const { SistemaBiciSabanaWeb, ESTADOS, estadoInicial } = window.BiciSabana;
+  const $ = (selector) => document.querySelector(selector);
+  const $$ = (selector) => [...document.querySelectorAll(selector)];
+  const escapar = (valor) => String(valor ?? "").replace(/[&<>"']/g, car => ({"&":"&amp;","<":"&lt;",">":"&gt;","\"":"&quot;","'":"&#39;"})[car]);
+  const formatoFecha = iso => iso ? new Date(iso).toLocaleString("es-CO", {year:"numeric",month:"short",day:"2-digit",hour:"2-digit",minute:"2-digit"}) : "—";
+  const intervalo = min => min == null ? "En curso" : min < 60 ? `${min} min` : `${Math.floor(min/60)} h ${min%60} min`;
+  const colores = {Azul:"#5684d9",Rojo:"#d85755",Verde:"#60ab78",Amarillo:"#eac64a",Negro:"#3a4b5e",Blanco:"#eef0f2"};
+  const colorSwatch = color => colores[color] || "#a1b3b8";
+  const clase = estado => estado === ESTADOS.DISPONIBLE ? "free" : estado === ESTADOS.PRESTADA ? "busy" : "repair";
+  const badge = estado => `<span class="status-pill ${estado===ESTADOS.PRESTADA?'prestada':estado===ESTADOS.MANTENIMIENTO?'mantenimiento':''}">${escapar(estado)}</span>`;
+  const biciSvg = `<svg class="bike-glyph" viewBox="0 0 28 22" aria-hidden="true" fill="none"><circle cx="5.5" cy="16.5" r="4.2" stroke="currentColor" stroke-width="1.7"/><circle cx="22" cy="16.5" r="4.2" stroke="currentColor" stroke-width="1.7"/><path d="m5.5 16.5 5.1-10 5.2 10H5.5l5.1-10 2-.1 9.4 10-5.4-14" stroke="currentColor" stroke-width="1.7" stroke-linecap="round" stroke-linejoin="round"/><path d="M14.8 2.4h3.8M8.6 6.6h3.5" stroke="currentColor" stroke-width="1.7" stroke-linecap="round"/></svg>`;
+
+  const almacen = (() => { try {return window.localStorage;} catch (_e) {return null;} })();
+  let sistema = SistemaBiciSabanaWeb.restaurarDesdeNavegador(almacen);
+  let filtroHistorial = "movimientos";
+  let modalActual = null;
+  const persistir = () => {try{sistema.guardarEnNavegador(almacen);}catch(_e) {notificar("Tu navegador no permitió guardar los cambios. Se conservarán hasta cerrar esta página.", true);}};
+  function notificar(mensaje, error = false) {
+    const toast = document.createElement("div"); toast.className = `toast${error?" error":""}`;
+    toast.textContent = mensaje; $("#toasts").appendChild(toast);
+    setTimeout(() => toast.remove(), 5200);
+  }
+  function ejecutar(fn, mensaje) {
+    try {const resultado = fn(); persistir(); dibujar(); notificar(typeof mensaje === "function" ? mensaje(resultado) : mensaje); return resultado;}
+    catch (e) {persistir(); dibujar(); notificar(e.message, true); return null;}
+  }
+  function dibujar() {dibujarResumen(); dibujarMapa(); dibujarPrestamos(); dibujarInventario(); dibujarHistorial(); actualizarPuestos();}
+  function dibujarResumen() {
+    const c = sistema.conteos();
+    $("#stat-total").textContent = c.total; $("#stat-disponibles").textContent = c.disponibles;
+    $("#stat-prestadas").textContent = c.prestadas; $("#stat-mantenimiento").textContent = c.mantenimiento;
+    $("#map-count").textContent = `${c.total} / 30 puestos ocupados`;
+    $("#active-badge").textContent = `${c.prestadas} en curso`;
+    $("#rejected-badge").textContent = sistema.rechazos().length;
+  }
+  function dibujarMapa() {
+    const filas = sistema.mapa();
+    $("#station-map").innerHTML = filas.map((fila,i) => `<div class="map-row"><div class="row-label">FILA ${i+1}</div>${fila.map((b,j) => b ? `<button type="button" class="bike-cell ${clase(b.estado)}" data-bici="${escapar(b.codigo)}" title="${escapar(b.codigo)} · ${escapar(b.estado)} · F${i+1} P${j+1}" aria-label="Bicicleta ${escapar(b.codigo)}, estado ${escapar(b.estado)}, fila ${i+1}, puesto ${j+1}">${biciSvg}<span class="bike-code">${escapar(b.codigo)}</span><span class="bike-spot">P${String(j+1).padStart(2,"0")}</span></button>` : `<button type="button" class="bike-cell empty" data-vacio="${i+1}-${j+1}" title="Puesto libre: fila ${i+1}, puesto ${j+1}" aria-label="Puesto libre, fila ${i+1}, puesto ${j+1}"><span style="font-size:21px">+</span><span class="bike-spot">P${String(j+1).padStart(2,"0")}</span></button>`).join("")}</div>`).join("");
+  }
+  function dibujarPrestamos() {
+    const prestamos = sistema.prestamosActivos();
+    $("#active-loans").innerHTML = prestamos.length ? prestamos.map(p => `<div class="loan-row"><div class="loan-icon">${biciSvg}</div><div class="loan-info"><strong>${escapar(p.bicicleta)} · Est. ${escapar(p.estudiante)}</strong><small>Desde ${formatoFecha(p.inicio)}</small></div><div class="loan-actions"><button type="button" data-return="${escapar(p.bicicleta)}">Devolver</button></div></div>`).join("") : `<div class="empty-state"><div class="empty-icon">✓</div><strong>Todo al día</strong><p>No hay préstamos activos. Las bicicletas disponibles están listas para salir.</p></div>`;
+  }
+  function dibujarInventario() {
+    const busqueda = $("#filter-text").value.trim().toUpperCase();
+    const estado = $("#filter-state").value;
+    const prestamos = sistema.prestamosActivos();
+    const filas = sistema.snapshot().bicicletas.filter(b => (b.codigo.toUpperCase().includes(busqueda)||b.color.toUpperCase().includes(busqueda)) && (estado === "Todos" || b.estado === estado)).sort((a,b) => a.codigo.localeCompare(b.codigo, "es", {numeric:true}));
+    $("#inventory-body").innerHTML = filas.length ? filas.map(b => {
+      const p = prestamos.find(p => p.bicicleta === b.codigo);
+      return `<tr><td><span class="color-disc" style="background:${colorSwatch(b.color)}"></span><strong>${escapar(b.codigo)}</strong><span style="color:#93a0ae"> · ${escapar(b.color)}</span></td><td>Fila ${b.fila} · Puesto ${b.puesto}</td><td>${badge(b.estado)}</td><td>${p ? escapar(p.estudiante) : "—"}</td><td><button type="button" class="table-action" data-bici="${escapar(b.codigo)}">Ver detalle ↗</button></td></tr>`;
+    }).join("") : '<tr><td class="table-empty" colspan="5">No se encontraron bicicletas con esos filtros.</td></tr>';
+    $("#inventory-count").textContent = `Mostrando ${filas.length} de ${sistema.conteos().total} bicicletas`;
+  }
+  function dibujarHistorial() {
+    const filtro = $("#history-filter").value.trim().toUpperCase();
+    const rechazos = filtroHistorial === "rechazos";
+    $$(".history-tab").forEach(b => {const selected = b.dataset.history === filtroHistorial; b.classList.toggle("active",selected);b.setAttribute("aria-selected",String(selected));});
+    let filas;
+    if (!rechazos) {
+      filas = sistema.historial().filter(p => p.bicicleta.toUpperCase().includes(filtro));
+      $("#history-head").innerHTML = "<tr><th>BICICLETA</th><th>ESTUDIANTE</th><th>INICIO</th><th>DEVOLUCIÓN</th><th>DURACIÓN / ESTADO</th></tr>";
+      $("#history-body").innerHTML = filas.length ? filas.map(p => `<tr><td><strong>${escapar(p.bicicleta)}</strong></td><td>${escapar(p.estudiante)}</td><td>${formatoFecha(p.inicio)}</td><td>${formatoFecha(p.fin)}</td><td>${p.activo ? badge(ESTADOS.PRESTADA) : escapar(intervalo(p.duracionMinutos))}</td></tr>`).join("") : '<tr><td colspan="5" class="table-empty">Aún no hay movimientos para mostrar.</td></tr>';
+    } else {
+      filas = sistema.rechazos().filter(r => r.bicicleta.toUpperCase().includes(filtro));
+      $("#history-head").innerHTML = "<tr><th>FECHA</th><th>OPERACIÓN</th><th>BICICLETA</th><th>ESTUDIANTE</th><th>RAZÓN DEL RECHAZO</th></tr>";
+      $("#history-body").innerHTML = filas.length ? filas.map(r => `<tr><td>${formatoFecha(r.fecha)}</td><td>${escapar(r.accion)}</td><td><strong>${escapar(r.bicicleta)}</strong></td><td>${escapar(r.estudiante||"—")}</td><td>${escapar(r.motivo)}</td></tr>`).join("") : '<tr><td colspan="5" class="table-empty">No hay intentos rechazados.</td></tr>';
+    }
+    $("#history-total").textContent = `${filas.length} registros`;
+  }
+  function actualizarPuestos() {
+    ["#registrar-puesto", "#mover-puesto"].forEach(selector => {
+      const elem = $(selector), seleccionado = elem.value;
+      elem.innerHTML = Array.from({length:10}, (_,i) => `<option value="${i+1}">Puesto ${i+1}</option>`).join("");
+      elem.value = seleccionado && Number(seleccionado)>=1 && Number(seleccionado)<=10 ? seleccionado : "1";
+    });
+  }
+  function cambiarTab(tab) {
+    $$("[data-tab]").forEach(b => {const activo = b.dataset.tab === tab;b.classList.toggle("active",activo);b.setAttribute("aria-selected",String(activo));});
+    $$("[data-panel]").forEach(div => div.hidden = div.dataset.panel !== tab);
+  }
+  function navegar(destino, tab) {
+    if(tab) cambiarTab(tab);
+    document.getElementById(destino)?.scrollIntoView({behavior:"smooth",block:"start"});
+    $$("[data-link]").forEach(a=>a.classList.toggle("active",a.dataset.link === destino));
+    const nombre = {inicio:"Panel general",estacion:"Estación 3 × 10",operaciones:"Operaciones",inventario:"Inventario",historial:"Historial y control"};
+    $("#section-name").textContent = nombre[destino] || "Panel general";
+    $("#sidebar").classList.remove("open");
+  }
+  function cerrarModal() {$("#detail-overlay").hidden = true;modalActual = null;}
+  function detalle(codigo) {
+    const b = sistema.bicicleta(codigo);
+    if (!b) return notificar("Esa bicicleta ya no está registrada.",true);
+    modalActual = b.codigo;
+    $("#detail-title").textContent = `Bicicleta ${b.codigo}`;
+    const prestamo = sistema.prestamosActivos().find(p=>p.bicicleta===b.codigo);
+    const mov = sistema.historial(b.codigo).length;
+    const items = [["Estado",b.estado],["Color",b.color],["Ubicación",`Fila ${b.fila}, puesto ${b.puesto}`],["Estudiante",prestamo ? prestamo.estudiante : "Sin préstamo activo"],["Movimientos registrados",mov]];
+    $("#detail-body").innerHTML=items.map(([nombre,valor])=>`<div class="detail-item"><span>${escapar(nombre)}</span><strong>${escapar(valor)}</strong></div>`).join("");
+    const acciones = [];
+    if (b.estado === ESTADOS.DISPONIBLE) acciones.push(`<button class="btn btn-primary" data-detail-act="prestar">Prestar</button>`,`<button class="btn btn-secondary" data-detail-act="mantenimiento">Mantenimiento</button>`);
+    else if (b.estado === ESTADOS.PRESTADA) acciones.push(`<button class="btn btn-primary" data-detail-act="devolver">Devolver</button>`);
+    else acciones.push(`<button class="btn btn-primary" data-detail-act="reactivar">Reactivar</button>`);
+    $("#detail-actions").innerHTML=acciones.join("");
+    $("#detail-overlay").hidden=false;
+    $("#detail-close").focus();
+  }
+  function seleccionarBici(codigo, accion) {
+    cerrarModal();
+    if (accion === "prestar") {$("#prestar-bici").value=codigo;navegar("operaciones","prestar");$("#prestar-estudiante").focus();}
+    if (accion === "devolver") {$("#devolver-bici").value=codigo;navegar("operaciones","devolver");$("#devolver-bici").focus();}
+    if (accion === "mantenimiento" || accion === "reactivar") {$("#gestionar-bici").value=codigo;$("#gestionar-accion").value=accion;$("#mover-campos").hidden=true;navegar("operaciones","gestionar");}
+  }
+
+  document.addEventListener("click", e => {
+    const nav = e.target.closest("[data-go]"); if(nav){navegar(nav.dataset.go,nav.dataset.tabGo);return;}
+    const href = e.target.closest("[data-link]"); if(href){e.preventDefault();navegar(href.dataset.link);return;}
+    const tab = e.target.closest("[data-tab]"); if(tab){cambiarTab(tab.dataset.tab);return;}
+    const hist = e.target.closest("[data-history]"); if(hist){filtroHistorial=hist.dataset.history;dibujarHistorial();return;}
+    const vacio = e.target.closest("[data-vacio]"); if(vacio){const [fila,puesto]=vacio.dataset.vacio.split("-");$("#registrar-fila").value=fila;$("#registrar-puesto").value=puesto;navegar("operaciones","registrar");$("#registrar-bici").focus();return;}
+    const biciclick = e.target.closest("[data-bici]"); if(biciclick){detalle(biciclick.dataset.bici);return;}
+    const devolver = e.target.closest("[data-return]"); if(devolver){seleccionarBici(devolver.dataset.return,"devolver");return;}
+    const detailAct = e.target.closest("[data-detail-act]"); if(detailAct && modalActual){seleccionarBici(modalActual,detailAct.dataset.detailAct);return;}
+  });
+  $$(".nav-link").forEach(a => a.addEventListener("click",e=>{e.preventDefault();navegar(a.dataset.link);}));
+  $("#form-prestar").addEventListener("submit", e => {e.preventDefault();const b=$("#prestar-bici").value;const s=$("#prestar-estudiante").value;const resultado=ejecutar(()=>sistema.prestar(b,s),r=>`Préstamo registrado: ${r.bicicleta} para el estudiante ${r.estudiante}.`);if(resultado){e.currentTarget.reset();}});
+  $("#form-devolver").addEventListener("submit", e => {e.preventDefault();const resultado=ejecutar(()=>sistema.devolver($("#devolver-bici").value),r=>`Devolución registrada: ${r.bicicleta}. Duración ${intervalo(r.duracionMinutos)}.`);if(resultado)e.currentTarget.reset();});
+  $("#form-registrar").addEventListener("submit",e=>{e.preventDefault();const resultado=ejecutar(()=>sistema.registrarBicicleta({codigo:$("#registrar-bici").value,color:$("#registrar-color").value,fila:$("#registrar-fila").value,puesto:$("#registrar-puesto").value}),r=>`Bicicleta ${r.codigo} registrada en fila ${r.fila}, puesto ${r.puesto}.`);if(resultado)e.currentTarget.reset();});
+  $("#gestionar-accion").addEventListener("change",()=>{$("#mover-campos").hidden=$("#gestionar-accion").value!=="mover";});
+  $("#form-gestionar").addEventListener("submit",e=>{e.preventDefault();const codigo=$("#gestionar-bici").value;const accion=$("#gestionar-accion").value;
+    if (accion==="retirar" && !confirm(`¿Retirar la bicicleta ${codigo.toUpperCase()} del inventario? Los préstamos históricos se conservarán.`)) return;
+    const fn=accion==="mantenimiento"?()=>sistema.mantenimiento(codigo):accion==="reactivar"?()=>sistema.reactivar(codigo):accion==="mover"?()=>sistema.mover(codigo,$("#mover-fila").value,$("#mover-puesto").value):()=>sistema.retirarBicicleta(codigo);
+    const mensajes={mantenimiento:"Bicicleta marcada en mantenimiento.",reactivar:"Bicicleta reactivada y disponible.",mover:"Bicicleta reubicada correctamente.",retirar:"Bicicleta retirada del inventario."};
+    const resultado=ejecutar(fn,mensajes[accion]);if(resultado)e.currentTarget.reset();$("#mover-campos").hidden=$("#gestionar-accion").value!=="mover";
+  });
+  $("#filter-text").addEventListener("input",dibujarInventario);$("#filter-state").addEventListener("change",dibujarInventario);$("#history-filter").addEventListener("input",dibujarHistorial);
+  $("#toggle-menu").addEventListener("click",()=>$("#sidebar").classList.toggle("open"));
+  $("#detail-close").addEventListener("click",cerrarModal);$("#detail-overlay").addEventListener("click",e=>{if(e.target.id==="detail-overlay")cerrarModal();});
+  document.addEventListener("keydown",e=>{if(e.key==="Escape")cerrarModal();});
+  $("#reset-demo").addEventListener("click",()=>{if(confirm("¿Restablecer 30 bicicletas de prueba y borrar todos los movimientos guardados en este navegador?")){sistema=new SistemaBiciSabanaWeb(estadoInicial(30));persistir();dibujar();notificar("Demostración restablecida con 30 bicicletas.");}});
+  $("#clear-demo").addEventListener("click",()=>{if(confirm("¿Vaciar la estación y borrar los movimientos de demostración? Podrás registrar bicicletas desde cero.")){sistema=new SistemaBiciSabanaWeb(estadoInicial(0));persistir();dibujar();notificar("Estación vaciada. Ya puedes registrar bicicletas.");}});
+  actualizarPuestos(); dibujar();
+})();
+
+</script>
+</body>
+</html>
