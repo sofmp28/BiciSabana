@@ -84,12 +84,12 @@ input:focus,select:focus{outline:none;border-color:#1E7B4E !important;box-shadow
   <main style="padding:26px 28px 48px;display:flex;flex-direction:column;gap:22px;max-width:1440px;width:100%">
   <sc-if value="{{ demoMode }}" hint-placeholder-val="{{ true }}">
     <div style="display:flex;gap:12px;align-items:center;justify-content:space-between;flex-wrap:wrap;padding:12px 16px;border-radius:12px;border:1px solid #D6C599;background:#FFF7E4;color:#705222;font-size:12px;font-weight:650">
-      <span>Modo demostración: los datos son ficticios y NO están guardándose en Python ni Supabase.</span>
-      <button onClick="{{ connectAction }}" style="border:0;background:#0E3B2A;color:white;cursor:pointer;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:800">Conectar estación real</button>
+      <span>Sin conexión al servidor: no se están guardando operaciones. Usa «Reintentar conexión».</span>
+      <button onClick="{{ connectAction }}" style="border:0;background:#0E3B2A;color:white;cursor:pointer;border-radius:8px;padding:8px 12px;font-size:12px;font-weight:800">Reintentar conexión</button>
     </div>
   </sc-if>
   <sc-if value="{{ liveMode }}" hint-placeholder-val="{{ false }}">
-    <div style="padding:10px 14px;border-radius:12px;border:1px solid #B8DDC4;background:#E4F3E8;color:#1D6B40;font-size:12px;font-weight:700">Estación conectada: las operaciones utilizan Python y se guardan en Supabase.</div>
+    <div style="padding:10px 14px;border-radius:12px;border:1px solid #B8DDC4;background:#E4F3E8;color:#1D6B40;font-size:12px;font-weight:700">Estación conectada automáticamente: los préstamos y devoluciones se guardan en Supabase.</div>
   </sc-if>
 
   <!-- 1 DASHBOARD -->
@@ -608,17 +608,17 @@ const Ops={
 };
 
 class Component extends DCLogic {
-  state={screen:"dashboard",data:seed(),online:false,connecting:false,now:Date.now(),sel:null,invQ:"",invF:"Todos",loanBike:"",loanStu:"",loanRes:null,retBike:"",retRes:null,histQ:"",toast:null,regOpen:false,reg:{codigo:"",color:"Verde",fila:"3",puesto:"10"},mantSel:"",moveFrom:null,narrow:false,menu:false};
+  state={screen:"dashboard",data:{bicicletas:[],prestamos:[],rechazos:[],seq:1},online:false,connecting:false,now:Date.now(),sel:null,invQ:"",invF:"Todos",loanBike:"",loanStu:"",loanRes:null,retBike:"",retRes:null,histQ:"",toast:null,regOpen:false,reg:{codigo:"",color:"Verde",fila:"3",puesto:"10"},mantSel:"",moveFrom:null,narrow:false,menu:false};
   componentDidMount(){
     this.onResize=()=>this.setState({narrow:window.innerWidth<960});this.onResize();
     window.addEventListener("resize",this.onResize);
     this.tick=setInterval(()=>this.setState({now:Date.now()}),30000);
     // Refresca la estación compartida cada 15 segundos si hay conexión.
     this.syncTick=setInterval(async()=>{
-      if(!this.state.online||!this.accessKey||this.busy)return;
+      if(!this.state.online||this.busy)return;
       try{const latest=await this.api("/api/estado");this.setState({data:this.adaptRemote(latest)});}catch(_e){}
     },15000);
-    try{const key=window.sessionStorage.getItem("bicisabana_operador");if(key)this.connect(key);}catch(_e){}
+    this.connect();
   }
   componentWillUnmount(){window.removeEventListener("resize",this.onResize);clearInterval(this.tick);clearInterval(this.syncTick);clearTimeout(this.tt);}
   // Datos de Supabase -> nombres que usa el diseño original de Claude.
@@ -628,8 +628,9 @@ class Component extends DCLogic {
       inicio:p.fecha_inicio,fin:p.fecha_fin,activo:p.activo,duracionMinutos:p.duracion_minutos})),
     rechazos:d.rechazos||[],seq:1
   };}
-  async api(path,method="GET",body,key=this.accessKey){
-    const options={method,headers:{"X-BiciSabana-Access":key||"","Accept":"application/json"},cache:"no-store"};
+  async api(path,method="GET",body,key=null){
+    const options={method,headers:{"Accept":"application/json"},credentials:"same-origin",cache:"no-store"};
+    if(key)options.headers["X-BiciSabana-Access"]=key;
     if(method!=="GET"){options.headers["Content-Type"]="application/json";options.body=JSON.stringify(body||{});}
     const response=await fetch(path,options);
     let json;
@@ -637,32 +638,21 @@ class Component extends DCLogic {
     if(!response.ok||!json.ok)throw new Error(json.error||"Operación no completada.");
     return json.resultado;
   }
-  async connect(key){
+  async connect(){
+    if(this.state.connecting)return;
     this.setState({connecting:true});
     try{
-      const remoto=await this.api("/api/estado","GET",null,key);
-      this.accessKey=key;
-      try{window.sessionStorage.setItem("bicisabana_operador",key);}catch(_e){}
+      const remoto=await this.api("/api/estado");
       this.setState({data:this.adaptRemote(remoto),online:true,connecting:false,sel:null,
-        toast:{ok:true,msg:"Conectado a Python y Supabase. Los cambios se guardarán para todos los monitores."}});
+        toast:{ok:true,msg:"Estación real conectada automáticamente. Los préstamos se guardan en Supabase."}});
       this.flash();
     }catch(e){
-      this.setState({online:false,connecting:false,toast:{ok:false,msg:"No conectado: "+e.message}});
+      this.setState({online:false,connecting:false,toast:{ok:false,msg:"Sin conexión: "+e.message}});
       this.flash();
     }
   }
   connectAction(){
-    if(this.state.online){
-      if(!window.confirm("¿Desconectar la estación real y volver a una demostración local?"))return;
-      this.accessKey=null;
-      try{window.sessionStorage.removeItem("bicisabana_operador");}catch(_e){}
-      this.setState({online:false,data:seed(),sel:null,toast:{ok:true,msg:"Modo demostración activado. Los datos reales permanecen en Supabase."}});
-      this.flash();return;
-    }
-    const clave=window.prompt("Clave de operador de BiciSabana (configurada en Vercel):");
-    if(clave===null)return;
-    if(!clave.trim()){this.setState({toast:{ok:false,msg:"Debes escribir la clave de operador."}});this.flash();return;}
-    this.connect(clave.trim());
+    if(!this.state.online)this.connect();
   }
   capture(fn){
     // En modo conectado capturamos la acción sin ejecutar la lógica simulada.
@@ -698,7 +688,14 @@ class Component extends DCLogic {
       this.busy=true;
       try{
         const {name,path,body}=this.capture(fn);
-        const row=await this.api(path,"POST",body);
+        const admin=!(["prestar","devolver"].includes(name));
+        let key=null;
+        if(admin){
+          key=window.prompt("Operación administrativa: introduce la clave de gestión (los préstamos y devoluciones NO la requieren):");
+          if(key===null){this.busy=false;return null;}
+          if(!key.trim())throw new Error("La gestión del inventario requiere autorización.");
+        }
+        const row=await this.api(path,"POST",body,key);
         const result=this.adaptResult(name,row,this.state.data);
         const latest=await this.api("/api/estado");
         this.setState({data:this.adaptRemote(latest),now:Date.now(),
@@ -710,9 +707,8 @@ class Component extends DCLogic {
           ...(extra?extra(null,e):{})});this.flash();return null;
       }finally{this.busy=false;}
     }
-    const d=JSON.parse(JSON.stringify(this.state.data));
-    try{const r=fn(d);this.setState({data:d,now:Date.now(),toast:{ok:true,msg:typeof okMsg==="function"?okMsg(r):okMsg},...(extra?extra(r,null):{})});this.flash();return r;}
-    catch(e){this.setState({data:d,now:Date.now(),toast:{ok:false,msg:e.message},...(extra?extra(null,e):{})});this.flash();return null;}
+    this.setState({toast:{ok:false,msg:"Sin conexión a Supabase. Los cambios NO se guardaron; vuelve a conectar la estación."}});
+    this.flash();return null;
   }
   flash(){clearTimeout(this.tt);this.tt=setTimeout(()=>this.setState({toast:null}),4200);}
   go(screen,extra={}){this.setState({screen,menu:false,...extra});try{window.scrollTo({top:0,behavior:"smooth"});}catch(e){}}
@@ -835,7 +831,7 @@ class Component extends DCLogic {
     const dl=new Date(now).toLocaleDateString("es-CO",{weekday:"long",day:"numeric",month:"long"});
     return {
       c,is,screenTitle:titles[s.screen],todayLabel:dl.charAt(0).toUpperCase()+dl.slice(1),
-      demoMode:!s.online,liveMode:s.online,connectionLabel:s.connecting?"Conectando…":s.online?"● EN LÍNEA":"○ MODO DEMO",connectAction:()=>this.connectAction(),
+      demoMode:!s.online,liveMode:s.online,connectionLabel:s.connecting?"Conectando…":s.online?"● ESTACIÓN REAL":"↻ REINTENTAR",connectAction:()=>this.connectAction(),
       navOps:navDef.map(mkNav),navCtl:ctlDef.map(mkNav),
       narrow:s.narrow,sidePos:s.narrow?"fixed":"sticky",sideLeft:s.narrow?(s.menu?"0":"-280px"):"0",showScrim:s.narrow&&s.menu,
       openMenu:()=>this.setState({menu:true}),closeMenu:()=>this.setState({menu:false}),

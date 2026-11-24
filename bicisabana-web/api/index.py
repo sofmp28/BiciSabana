@@ -4,11 +4,17 @@ La lógica de validación permanece en backend/bicisabana.py. Los cambios
 relacionados entre préstamos y bicicletas se confirman atómicamente mediante
 funciones de PostgreSQL definidas en supabase/schema.sql.
 
-Todas las rutas requieren la clave de operador en X-BiciSabana-Access.
+La estación se conecta sin introducir una clave en la interfaz. Los préstamos
+y devoluciones utilizan una sesión anónima firmada, con comprobación de origen.
+La gestión administrativa sigue protegida por una clave en el servidor.
 La service role de Supabase se usa SOLO en el servidor; nunca en el navegador.
 """
 
 import hmac
+import hashlib
+import secrets
+import time
+from http.cookies import SimpleCookie, CookieError
 import json
 import logging
 import re
@@ -83,7 +89,7 @@ def cargar_sistema():
 
 
 def estado():
-    """Fotografía actual de la base de datos. Solo para operadores autorizados."""
+    """Fotografía actual de la base de datos en el servidor."""
     db = _db_client()
     return {
         "bicicletas": db.table("bicicletas").select("*").order("codigo").execute().data,
@@ -92,6 +98,43 @@ def estado():
         "rechazos": (db.table("intentos_rechazados").select("*")
                      .order("fecha", desc=True).execute().data),
     }
+
+
+def estado_publico():
+    """Inventario y movimientos; nunca revelar códigos completos de estudiantes."""
+    datos = estado()
+    for prestamo in datos["prestamos"]:
+        codigo = str(prestamo.get("estudiante") or "").strip()
+        prestamo["estudiante"] = "••••" + codigo[-2:] if codigo else "—"
+    for rechazo in datos["rechazos"]:
+        codigo = str(rechazo.get("estudiante") or "").strip()
+        rechazo["estudiante"] = "••••" + codigo[-2:] if codigo else "—"
+    return datos
+
+
+def crear_sesion():
+    """Token aleatorio temporal firmado solo con secreto del servidor."""
+    secreto = os.getenv("BICISABANA_ACCESS_KEY", "")
+    if not secreto:
+        raise RuntimeError("La clave interna de sesión no está configurada.")
+    cuerpo = str(int(time.time())) + "." + secrets.token_urlsafe(20)
+    firma = hmac.new(secreto.encode(), cuerpo.encode(), hashlib.sha256).hexdigest()
+    return cuerpo + "." + firma
+
+
+def validar_sesion(token):
+    secreto = os.getenv("BICISABANA_ACCESS_KEY", "")
+    if not secreto or not token or len(token) > 250:
+        return False
+    partes = token.split(".")
+    if len(partes) != 3 or not partes[0].isdigit():
+        return False
+    instante = int(partes[0])
+    if not 0 <= time.time() - instante <= 7200:
+        return False
+    cuerpo = partes[0] + "." + partes[1]
+    firma = hmac.new(secreto.encode(), cuerpo.encode(), hashlib.sha256).hexdigest()
+    return hmac.compare_digest(partes[2], firma)
 
 
 def _registrar_rechazo(info):
@@ -229,29 +272,22 @@ RUTAS = {
 
 
 class handler(BaseHTTPRequestHandler):  # Vercel reconoce este nombre exacto.
-    def _enviar(self, status, cuerpo):
+    def _enviar(self, status, cuerpo, sesion=None):
         data = json.dumps(cuerpo, ensure_ascii=False, default=str).encode("utf-8")
         self.send_response(status)
         self.send_header("Content-Type", "application/json; charset=utf-8")
         self.send_header("Cache-Control", "no-store")
         self.send_header("X-Content-Type-Options", "nosniff")
+        if sesion:
+            # La cookie es inaccesible a JavaScript, de uso exclusivo de /api.
+            seguro = "; Secure" if self.headers.get("Host", "").split(":")[0] != "127.0.0.1" else ""
+            self.send_header("Set-Cookie", "bicisabana_sesion=" + sesion +
+                             "; HttpOnly; SameSite=Strict; Path=/api; Max-Age=7200" + seguro)
         self.send_header("Content-Length", str(len(data)))
         self.end_headers()
         self.wfile.write(data)
 
-    def _autorizar(self):
-        clave = os.getenv("BICISABANA_ACCESS_KEY", "")
-        if not clave:
-            self._enviar(503, {"ok": False, "error": "Servidor sin clave de acceso configurada."})
-            return False
-        recibida = self.headers.get("X-BiciSabana-Access", "")
-        if not hmac.compare_digest(clave, recibida):
-            self._enviar(401, {"ok": False, "error": "Clave de operador incorrecta."})
-            return False
-        return True
-
     def _ruta(self):
-        """Reconoce las rutas originales y las reescritas por Vercel."""
         parsed = urlsplit(self.path)
         ruta = parsed.path
         if ruta == "/api/estado" or ruta in RUTAS:
@@ -262,14 +298,43 @@ class handler(BaseHTTPRequestHandler):  # Vercel reconoce este nombre exacto.
                 return "/api/" + operaciones[0]
         return ruta
 
+    def _autorizar_admin(self):
+        clave = os.getenv("BICISABANA_ACCESS_KEY", "")
+        recibida = self.headers.get("X-BiciSabana-Access", "")
+        if not clave or not recibida or not hmac.compare_digest(clave, recibida):
+            self._enviar(403, {"ok": False, "error":
+                "Operación administrativa protegida. Solicita autorización al responsable de la estación."})
+            return False
+        return True
+
+    def _autorizar_publico(self):
+        # CSRF: peticiones de lectura son públicas, escrituras solo desde el sitio.
+        origen = self.headers.get("Origin", "")
+        host = self.headers.get("Host", "")
+        partes = urlsplit(origen)
+        local = host.startswith("127.0.0.1:") or host.startswith("localhost:")
+        if partes.netloc != host or partes.scheme != ("http" if local else "https"):
+            self._enviar(403, {"ok": False, "error": "Solicitud desde un origen no autorizado."})
+            return False
+        try:
+            cookie = SimpleCookie()
+            cookie.load(self.headers.get("Cookie", ""))
+            token = cookie["bicisabana_sesion"].value if "bicisabana_sesion" in cookie else ""
+        except (CookieError, ValueError):
+            token = ""
+        if not validar_sesion(token):
+            self._enviar(403, {"ok": False, "error":
+                "La sesión venció. Recarga BiciSabana para seguir operando."})
+            return False
+        return True
+
     def do_GET(self):
         ruta = self._ruta()
         if ruta != "/api/estado":
             return self._enviar(404, {"ok": False, "error": "Ruta no encontrada."})
-        if not self._autorizar():
-            return
         try:
-            self._enviar(200, {"ok": True, "resultado": estado()})
+            sesion = crear_sesion()
+            self._enviar(200, {"ok": True, "resultado": estado_publico()}, sesion=sesion)
         except Exception:
             logger.exception("Error consultando inventario")
             self._enviar(503, {"ok": False, "error": "No se pudo consultar la base de datos."})
@@ -279,7 +344,11 @@ class handler(BaseHTTPRequestHandler):  # Vercel reconoce este nombre exacto.
         funcion = RUTAS.get(ruta)
         if funcion is None:
             return self._enviar(404, {"ok": False, "error": "Ruta no encontrada."})
-        if not self._autorizar():
+        es_publico = ruta in ("/api/prestamos", "/api/devoluciones")
+        if es_publico:
+            if not self._autorizar_publico():
+                return
+        elif not self._autorizar_admin():
             return
         try:
             largo = int(self.headers.get("Content-Length", "0"))

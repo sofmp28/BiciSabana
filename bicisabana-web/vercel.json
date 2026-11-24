@@ -3,14 +3,9 @@
   "outputDirectory": "public",
   "cleanUrls": true,
   "rewrites": [
-    {
-      "source": "/api/:operacion",
-      "destination": "/api/index.py?operacion=:operacion"
-    }
+    { "source": "/api/:operacion", "destination": "/api/index.py?operacion=:operacion" }
   ],
   "functions": {
-    "api/index.py": {
-      "includeFiles": "backend/**"
-    }
+    "api/index.py": { "includeFiles": "backend/**" }
   }
 }

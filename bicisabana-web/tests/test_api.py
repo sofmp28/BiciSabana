@@ -134,27 +134,6 @@ class DB:
         return RPC(self, nombre, datos)
 
 
-class PruebasRutasVercel(unittest.TestCase):
-    def test_originales(self):
-        h = app.handler.__new__(app.handler)
-        for path in ("/api/estado", "/api/prestamos", "/api/devoluciones"):
-            h.path = path
-            self.assertEqual(h._ruta(), path)
-
-    def test_reescritas(self):
-        h = app.handler.__new__(app.handler)
-        for name in ("estado", "prestamos", "devoluciones", "bicicletas",
-                     "mantenimiento", "reactivar", "mover", "retirar", "cargar-ejemplo"):
-            h.path = "/api/index.py?operacion=" + name
-            self.assertEqual(h._ruta(), "/api/" + name)
-
-    def test_invalidas(self):
-        h = app.handler.__new__(app.handler)
-        for path in ("/api/index.py?operacion=%2E%2E%2Fsecretos", "/api/index.py"):
-            h.path = path
-            self.assertEqual(h._ruta(), "/api/index.py")
-
-
 class PruebasIntegracion(unittest.TestCase):
     def setUp(self):
         self.db = DB()
@@ -210,52 +189,109 @@ class PruebasIntegracion(unittest.TestCase):
         self.assertEqual(len(self.db.tablas["prestamos"]), 0)
         self.assertEqual(len(self.db.tablas["intentos_rechazados"]), 1)
 
-    def test_08_http_sin_clave_devuelve_401(self):
+    def _http_server(self):
         import threading
         from http.server import HTTPServer
-        from urllib.request import urlopen
-        from urllib.error import HTTPError
-        from unittest.mock import patch
         servidor = HTTPServer(("127.0.0.1", 0), app.handler)
         hilo = threading.Thread(target=servidor.serve_forever, daemon=True)
         hilo.start()
-        try:
-            with patch.dict(os.environ, {"BICISABANA_ACCESS_KEY": "clave-educativa-123"}):
-                with self.assertRaises(HTTPError) as c:
-                    urlopen(f"http://127.0.0.1:{servidor.server_port}/api/estado")
-                self.assertEqual(c.exception.code, 401)
-        finally:
-            servidor.shutdown()
-            servidor.server_close()
+        return servidor
 
-    def test_09_http_con_clave_consulta_y_prepara_prestamo(self):
+    def test_08_estado_sin_clave_es_real_y_enmascara_estudiante(self):
         import json
-        import threading
-        from http.server import HTTPServer
+        from urllib.request import urlopen
+        from unittest.mock import patch
+        servidor = self._http_server()
+        try:
+            with patch.dict(os.environ, {"BICISABANA_ACCESS_KEY": "secreto-servidor-de-prueba-123456"}):
+                app.op_prestar(app.cargar_sistema(),
+                               {"bicicleta": "B01", "estudiante": "123456"})
+                with urlopen(f"http://127.0.0.1:{servidor.server_port}/api/estado") as r:
+                    data = json.load(r)
+                    cookie = r.headers.get("Set-Cookie", "")
+                    self.assertEqual(r.status, 200)
+                    self.assertTrue(data["ok"])
+                    self.assertTrue(cookie.startswith("bicisabana_sesion="))
+                    self.assertEqual(data["resultado"]["prestamos"][0]["estudiante"], "••••56")
+        finally:
+            servidor.shutdown(); servidor.server_close()
+
+    def test_09_prestar_y_devolver_sin_escribir_clave(self):
+        import json
         from urllib.request import Request, urlopen
         from unittest.mock import patch
-        servidor = HTTPServer(("127.0.0.1", 0), app.handler)
-        hilo = threading.Thread(target=servidor.serve_forever, daemon=True)
-        hilo.start()
+        servidor = self._http_server()
         try:
-            with patch.dict(os.environ, {"BICISABANA_ACCESS_KEY": "clave-educativa-123"}):
-                url = f"http://127.0.0.1:{servidor.server_port}"
-                post = Request(url + "/api/prestamos",
-                               data=json.dumps({"bicicleta":"B01", "estudiante":"123456"}).encode(),
-                               headers={"X-BiciSabana-Access":"clave-educativa-123",
-                                        "Content-Type":"application/json"}, method="POST")
-                with urlopen(post) as respuesta:
-                    self.assertEqual(respuesta.status, 200)
-                    cuerpo = json.load(respuesta)
-                    self.assertTrue(cuerpo["ok"])
-                get = Request(url + "/api/estado",
-                              headers={"X-BiciSabana-Access":"clave-educativa-123"})
-                with urlopen(get) as respuesta:
-                    estados = json.load(respuesta)["resultado"]
-                    self.assertEqual(estados["bicicletas"][0]["estado"], "Prestada")
+            with patch.dict(os.environ, {"BICISABANA_ACCESS_KEY": "secreto-servidor-de-prueba-123456"}):
+                base = f"http://127.0.0.1:{servidor.server_port}"
+                with urlopen(base + "/api/estado") as r:
+                    cookie = r.headers["Set-Cookie"].split(";", 1)[0]
+                def post(path, payload):
+                    return Request(base + path, data=json.dumps(payload).encode(),
+                                   method="POST", headers={"Content-Type": "application/json",
+                                   "Origin":base, "Cookie":cookie})
+                with urlopen(post("/api/prestamos", {"bicicleta":"B01", "estudiante":"123456"})) as r:
+                    self.assertEqual(r.status,200)
+                    self.assertTrue(json.load(r)["resultado"]["activo"])
+                with urlopen(post("/api/devoluciones", {"bicicleta":"B01"})) as r:
+                    self.assertFalse(json.load(r)["resultado"]["activo"])
+                self.assertEqual(self.db.tablas["bicicletas"][0]["estado"], "Disponible")
+                self.assertEqual(len(self.db.tablas["prestamos"]), 1)
         finally:
-            servidor.shutdown()
-            servidor.server_close()
+            servidor.shutdown(); servidor.server_close()
+
+    def test_10_no_se_permiten_escrituras_sin_sesion(self):
+        import json
+        from urllib.request import Request, urlopen
+        from urllib.error import HTTPError
+        from unittest.mock import patch
+        servidor = self._http_server()
+        try:
+            with patch.dict(os.environ, {"BICISABANA_ACCESS_KEY": "secreto-servidor-de-prueba-123456"}):
+                base = f"http://127.0.0.1:{servidor.server_port}"
+                body=json.dumps({"bicicleta":"B01","estudiante":"123456"}).encode()
+                for headers in [{"Origin":base},{"Origin":"https://sitio-ajeno.example"}]:
+                    request=Request(base+"/api/prestamos", data=body,method="POST",headers=headers)
+                    with self.assertRaises(HTTPError) as exc:
+                        urlopen(request)
+                    self.assertEqual(exc.exception.code,403)
+                self.assertEqual(len(self.db.tablas["prestamos"]),0)
+        finally:
+            servidor.shutdown(); servidor.server_close()
+
+    def test_11_administracion_sigue_protegida(self):
+        import json
+        from urllib.request import Request, urlopen
+        from urllib.error import HTTPError
+        from unittest.mock import patch
+        servidor = self._http_server()
+        try:
+            with patch.dict(os.environ, {"BICISABANA_ACCESS_KEY": "secreto-servidor-de-prueba-123456"}):
+                base = f"http://127.0.0.1:{servidor.server_port}"
+                body=json.dumps({"bicicleta":"B01"}).encode()
+                request=Request(base+"/api/mantenimiento",data=body,method="POST")
+                with self.assertRaises(HTTPError) as exc: urlopen(request)
+                self.assertEqual(exc.exception.code,403)
+                request=Request(base+"/api/mantenimiento",data=body,method="POST",
+                                headers={"X-BiciSabana-Access":"secreto-servidor-de-prueba-123456"})
+                with urlopen(request) as r:
+                    self.assertEqual(json.load(r)["resultado"]["estado"],"En mantenimiento")
+        finally:
+            servidor.shutdown(); servidor.server_close()
+
+
+class PruebasRutasVercel(unittest.TestCase):
+    def test_reescritura_y_rutas_originales(self):
+        h = app.handler.__new__(app.handler)
+        for op in ("estado", "prestamos", "devoluciones", "mantenimiento"):
+            h.path = f"/api/index.py?operacion={op}"
+            self.assertEqual(h._ruta(), f"/api/{op}")
+            h.path = f"/api/{op}"
+            self.assertEqual(h._ruta(), f"/api/{op}")
+    def test_reescritura_invalida(self):
+        h = app.handler.__new__(app.handler)
+        h.path = "/api/index.py?operacion=%2E%2E%2Fsecretos"
+        self.assertEqual(h._ruta(), "/api/index.py")
 
 
 if __name__ == "__main__":
